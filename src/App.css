@@ -4,7 +4,8 @@ body, html {
     padding: 0;
     height: 100%;
     width: 100%;
-    position: fixed; /* 제거 - 스크롤 문제의 원인 */
+    overflow-y: auto; /* 스크롤 가능 */
+    -webkit-overflow-scrolling: touch; /* iOS 부드러운 스크롤 */
 }
 
 #root {
