@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply bg-gray-50 dark:bg-gray-900;
+    @apply bg-gray-50;
   }
 }
 
@@ -12,17 +12,17 @@
   .btn-primary {
     @apply px-4 py-2 bg-blue-500 text-white rounded-lg 
            hover:bg-blue-600 transition-colors duration-200
-           dark:bg-blue-600 dark:hover:bg-blue-700;
+           /* dark:bg-blue-600 dark:hover:bg-blue-700; */
   }
   
   .input-primary {
     @apply w-full px-4 py-2 border border-gray-300 rounded-lg
            focus:ring-2 focus:ring-blue-500 focus:border-transparent
-           dark:bg-gray-800 dark:border-gray-700;
+           /* dark:bg-gray-800 dark:border-gray-700; */
   }
   
   .card {
     @apply bg-white p-6 rounded-xl shadow-lg
-           dark:bg-gray-800;
+           /* dark:bg-gray-800; */
   }
 }
