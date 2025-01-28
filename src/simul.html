@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>뽑기 시뮬레이터</title>
+    <style>
+        table { border-collapse: collapse; margin: 10px 0; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f2f2f2; }
+        input, select { margin: 5px; padding: 5px; }
+    </style>
+</head>
+<body>
+    <h1>뽑기 시뮬레이터</h1>
+    <div>
+        <input type="number" id="gachaCount" placeholder="뽑기 횟수" min="1">
+        <input type="number" id="epicCount" placeholder="에픽 카운트" min="0">
+        <input type="number" id="sGradeCount" placeholder="S급 카운트" min="0">
+        <select id="rotation">
+            <option value="A">로테이션 A</option>
+            <option value="B">로테이션 B</option>
+            <option value="C">로테이션 C</option>
+            <option value="D">로테이션 D</option>
+        </select>
+        <button onclick="runSimulation()">실행</button>
+    </div>
+    <div id="result"></div>
+
+    <script>
+        // S급 에픽 로테이션 데이터
+        const sGradeRotation = {
+            A: [
+                { name: '열공의 검', type: '무기', rate: 0.2 },
+                { name: '버섯 망치', type: '무기', rate: 0.2 },
+                { name: '별의 지팡이', type: '무기', rate: 0.2 },
+                { name: '부활 망토', type: '갑옷', rate: 0.2 },
+                { name: '그림자 반지', type: '반지', rate: 0.4 },
+                { name: '광휘의 증명', type: '목걸이', rate: 0.4 },
+            ],
+            B: [
+                { name: '결재의 칼날', type: '무기', rate: 0.2 },
+                { name: '그림자 장창', type: '무기', rate: 0.2 },
+                { name: '천사의 활', type: '무기', rate: 0.2 },
+                { name: '용의 숨결 갑옷', type: '갑옷', rate: 0.2 },
+                { name: '심판의 반지', type: '반지', rate: 0.4 },
+                { name: '핏빛 성배', type: '목걸이', rate: 0.4 },
+            ],
+            C: [
+                { name: '두리안 망치', type: '무기', rate: 0.2 },
+                { name: '죽음의 지팡이', type: '무기', rate: 0.2 },
+                { name: '부활 망토', type: '갑옷', rate: 0.2 },
+                { name: '천화의 반지', type: '반지', rate: 0.4 },
+                { name: '드래곤볼의 반지', type: '반지', rate: 0.4 },
+                { name: '결재 엠블럼', type: '목걸이', rate: 0.2 },
+            ],
+            D: [
+                { name: '윈드토커', type: '무기', rate: 0.2 },
+                { name: '주교의 지팡이', type: '무기', rate: 0.2 },
+                { name: '용의 숨결 갑옷', type: '갑옷', rate: 0.2 },
+                { name: '그림자 반지', type: '반지', rate: 0.4 },
+                { name: '심판의 반지', type: '반지', rate: 0.4 },
+                { name: '광휘의 증명', type: '목걸이', rate: 0.2 },
+            ],
+        };
+
+        // 일반 장비 풀
+        const normalWeapons = ['방랑의 대검', '용사의 철검', '용사의 장도', '거인의 망치', '얼음 삼장의 창', '방랑의 장궁', '호크아이 활', '방랑의 지팡이', '숲의 지팡이', '공령의 지팡이'];
+        const normalArmors = ['천 외투', '피부 경화 갑옷', '은린 흉갑'];
+        const normalNecklaces = ['생명의 룬', '서리바람의 호각', '얼음 버블'];
+        const normalRings = ['수호 반지', '참매 반지', '술법의 반지'];
+
+        function getRandomItem(grade, rotation) {
+            if (grade === 'S급 에픽') {
+                const items = sGradeRotation[rotation];
+                const totalRate = items.reduce((sum, item) => sum + item.rate, 0);
+                const random = Math.random() * totalRate;
+                let sum = 0;
+                for (const item of items) {
+                    sum += item.rate;
+                    if (random <= sum) {
+                        return { ...item, grade };
+                    }
+                }
+            } else {
+                let weights;
+                switch (grade) {
+                    case '에픽':
+                        weights = [2.5, 1.5, 3, 3]; // 무기, 갑옷, 목걸이, 반지
+                        break;
+                    case '희귀':
+                        weights = [2.5, 1.5, 3, 3];
+                        break;
+                    case '우수':
+                        weights = [6.25, 3.75, 7.5, 7.5];
+                        break;
+                    case '일반':
+                        weights = [13.4, 8.01, 16.02, 16.02];
+                        break;
+                    default:
+                        weights = [];
+                }
+                const totalWeight = weights.reduce((a, b) => a + b, 0);
+                const random = Math.random() * totalWeight;
+                let sum = 0;
+                let typeIndex = 0;
+                const types = ['무기', '갑옷', '목걸이', '반지'];
+                for (let i = 0; i < weights.length; i++) {
+                    sum += weights[i];
+                    if (random <= sum) {
+                        typeIndex = i;
+                        break;
+                    }
+                }
+                const type = types[typeIndex];
+                let pool;
+                switch (type) {
+                    case '무기':
+                        pool = normalWeapons;
+                        break;
+                    case '갑옷':
+                        pool = normalArmors;
+                        break;
+                    case '목걸이':
+                        pool = normalNecklaces;
+                        break;
+                    case '반지':
+                        pool = normalRings;
+                        break;
+                }
+                const name = pool[Math.floor(Math.random() * pool.length)];
+                return { name, type, grade };
+            }
+        }
+
+        function simulate(gachaCount, currentEpicCount, currentSGradeCount, rotation) {
+            let epicCount = currentEpicCount;
+            let sGradeCount = currentSGradeCount;
+            const results = [];
+            const countStats = { 'S급 에픽': 0, '에픽': 0, '희귀': 0, '우수': 0, '일반': 0 };
+
+            for (let i = 0; i < gachaCount; i++) {
+                sGradeCount--;
+                epicCount--;
+
+                let selectedGrade = null;
+                let isPityS = false;
+                let isPityEpic = false;
+
+                if (sGradeCount <= 0) {
+                    selectedGrade = 'S급 에픽';
+                    isPityS = true;
+                } else if (epicCount <= 0) {
+                    selectedGrade = '에픽';
+                    isPityEpic = true;
+                } else {
+                    const random = Math.random() * 100;
+                    if (random < 1.6) {
+                        selectedGrade = 'S급 에픽';
+                    } else if (random < 11.6) {
+                        selectedGrade = '에픽';
+                    } else if (random < 21.6) {
+                        selectedGrade = '희귀';
+                    } else if (random < 46.6) {
+                        selectedGrade = '우수';
+                    } else {
+                        selectedGrade = '일반';
+                    }
+                }
+
+                if (isPityS) {
+                    sGradeCount = 60;
+                    epicCount = 10;
+                } else if (isPityEpic) {
+                    epicCount = 10;
+                }
+
+                const item = getRandomItem(selectedGrade, rotation);
+
+                if (!isPityS && !isPityEpic) {
+                    if (selectedGrade === 'S급 에픽') {
+                        sGradeCount = 60;
+                        epicCount = 10;
+                    } else if (selectedGrade === '에픽') {
+                        epicCount = 10;
+                    }
+                }
+
+                results.push(item);
+                countStats[item.grade]++;
+            }
+
+            const itemDetails = {};
+            results.forEach(item => {
+                const key = `${item.grade}|${item.name}`;
+                if (!itemDetails[key]) {
+                    itemDetails[key] = { ...item, count: 0 };
+                }
+                itemDetails[key].count++;
+            });
+
+            return {
+                countStats,
+                itemDetails: Object.values(itemDetails),
+                finalEpicCount: epicCount,
+                finalSGradeCount: sGradeCount,
+            };
+        }
+
+        function runSimulation() {
+            const gachaCount = parseInt(document.getElementById('gachaCount').value) || 0;
+            const epicCount = parseInt(document.getElementById('epicCount').value) || 0;
+            const sGradeCount = parseInt(document.getElementById('sGradeCount').value) || 0;
+            const rotation = document.getElementById('rotation').value;
+
+            const result = simulate(gachaCount, epicCount, sGradeCount, rotation);
+
+            let html = `<h3>결과</h3>`;
+            html += `<p>남은 에픽 카운트: ${result.finalEpicCount}, 남은 S급 카운트: ${result.finalSGradeCount}</p>`;
+
+            html += `<h4>등급별 획득</h4><table><tr><th>등급</th><th>수량</th></tr>`;
+            for (const [grade, count] of Object.entries(result.countStats)) {
+                html += `<tr><td>${grade}</td><td>${count}</td></tr>`;
+            }
+            html += `</table>`;
+
+            html += `<h4>아이템별 획득</h4><table><tr><th>이름</th><th>등급</th><th>유형</th><th>수량</th></tr>`;
+            result.itemDetails.sort((a, b) => b.count - a.count).forEach(item => {
+                html += `<tr><td>${item.name}</td><td>${item.grade}</td><td>${item.type}</td><td>${item.count}</td></tr>`;
+            });
+            html += `</table>`;
+
+            document.getElementById('result').innerHTML = html;
+        }
+    </script>
+</body>
+</html>

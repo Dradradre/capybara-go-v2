@@ -1,0 +1,219 @@
+.App {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: #f8f9fa;
+  min-height: 100vh;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 1rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  color: white;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  margin: 0;
+  padding: 0;
+  color: white;
+}
+
+.header p {
+  margin: 0.5rem 0 0 0;
+  font-size: 0.9rem;
+  opacity: 0.9;
+}
+
+.input-container {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  margin-bottom: 1.5rem;
+}
+
+.input-wrapper {
+  position: relative;
+  width: 100%;
+  margin-bottom: 15px;
+}
+
+.input-wrapper input {
+  width: 100%;
+}
+
+.input-helper {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: calc(100% + 5px);
+  background-color: white;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #666;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  z-index: 10;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input-wrapper:focus-within .input-helper {
+  display: block;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: all 0.2s ease;
+  background: #f8f9fa;
+}
+
+input:focus, select:focus {
+  border-color: #667eea;
+  outline: none;
+  background: white;
+}
+
+button {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-top: 1rem;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+.result-container {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.result-summary {
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #667eea;
+}
+
+.result-summary h3 {
+  margin: 0 0 0.5rem 0;
+  color: #1a1a1a;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 1rem 0;
+  font-size: 14px;
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+}
+
+th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+.grade-S {
+  color: #f53b57;
+  font-weight: 600;
+}
+
+.grade-에픽 {
+  color: #ffa502;
+  font-weight: 600;
+}
+
+.grade-희귀 {
+  color: #3742fa;
+  font-weight: 600;
+}
+
+.grade-우수 {
+  color: #2ed573;
+  font-weight: 600;
+}
+
+.grade-일반 {
+  color: #747d8c;
+}
+
+.filter-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 1rem;
+  background: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+}
+
+.filter-input,
+.filter-select {
+  width: 100%;
+  padding: 8px 12px;
+  border: 2px solid #e9ecef;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.2s ease;
+}
+
+.filter-input:focus,
+.filter-select:focus {
+  border-color: #667eea;
+  outline: none;
+}
+
+@media (max-width: 480px) {
+  .App {
+    padding: 15px;
+  }
+  
+  .header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .input-container,
+  .result-container {
+    padding: 1rem;
+  }
+}
