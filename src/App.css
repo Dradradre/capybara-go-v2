@@ -217,3 +217,55 @@ tr:last-child td {
     padding: 1rem;
   }
 }
+
+.description-box {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+}
+
+.description-box h3 {
+    margin: 0 0 1rem 0;
+    color: #1a1a1a;
+    font-size: 1.2rem;
+}
+
+.description-box ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+}
+
+.description-box ul ul {
+    padding-left: 1.2rem;
+    margin: 0.5rem 0;
+}
+
+.description-box li {
+    margin-bottom: 0.8rem;
+    line-height: 1.5;
+}
+
+.description-box ul ul li {
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.highlight {
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+@media (max-width: 480px) {
+    .description-box {
+        padding: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .description-box ul ul {
+        padding-left: 1rem;
+    }
+}

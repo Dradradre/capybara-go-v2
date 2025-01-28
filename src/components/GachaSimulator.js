@@ -54,6 +54,39 @@ const GachaSimulator = () => {
                 <h1>카피바라 Go 뽑기 시뮬레이터</h1>
                 <p>제작: 351서버 페이커</p>
             </div>
+            
+            <div className="description-box">
+                <h3>시뮬레이터 설명</h3>
+                <ul>
+                    <li>
+                        <span className="highlight">등급별 확률</span>
+                        <ul>
+                            <li><span className="grade-S">S급 에픽</span>: 1.6%</li>
+                            <li><span className="grade-에픽">에픽</span>: 10%</li>
+                            <li><span className="grade-희귀">희귀</span>: 10%</li>
+                            <li><span className="grade-우수">우수</span>: 25%</li>
+                            <li><span className="grade-일반">일반</span>: 53.4%</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <span className="highlight">보장 시스템</span>
+                        <ul>
+                            <li>에픽 카운트(1~10): n회 내 에픽 장비 1개 확정</li>
+                            <li>S급 카운트(1~60): n회 내 S급 에픽 장비 1개 확정</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <span className="highlight">로테이션 설명</span>
+                        <ul>
+                            <li>열공검 로테이션: 열공의 검 등 출현</li>
+                            <li>천활 로테이션: 천사의 활 등 출현</li>
+                            <li>죽지 로테이션: 죽음의 지팡이 등 출현</li>
+                            <li>윈토 로테이션: 윈드토커 등 출현</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
             <div className="input-container">
                 <div className="input-wrapper">
                     <input
