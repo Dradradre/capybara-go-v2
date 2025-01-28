@@ -36,4 +36,43 @@ export const sGradeRotation = {
 export const normalWeapons = ['방랑의 대검', '용사의 철검', '용사의 장도', '거인의 망치', '얼음 삼장의 창', '방랑의 장궁', '호크아이 활', '방랑의 지팡이', '숲의 지팡이', '공령의 지팡이'];
 export const normalArmors = ['천 외투', '피부 경화 갑옷', '은린 흉갑'];
 export const normalNecklaces = ['생명의 룬', '서리바람의 호각', '얼음 버블'];
-export const normalRings = ['수호 반지', '참매 반지', '술법의 반지']; 
+export const normalRings = ['수호 반지', '참매 반지', '술법의 반지'];
+
+export const itemTypes = {
+    무기: {
+        items: normalWeapons,
+        weight: {
+            에픽: 2.5,
+            희귀: 2.5,
+            우수: 6.25,
+            일반: 13.4
+        }
+    },
+    갑옷: {
+        items: normalArmors,
+        weight: {
+            에픽: 1.5,
+            희귀: 1.5,
+            우수: 3.75,
+            일반: 8.01
+        }
+    },
+    목걸이: {
+        items: normalNecklaces,
+        weight: {
+            에픽: 3,
+            희귀: 3,
+            우수: 7.5,
+            일반: 16.02
+        }
+    },
+    반지: {
+        items: normalRings,
+        weight: {
+            에픽: 3,
+            희귀: 3,
+            우수: 7.5,
+            일반: 16.02
+        }
+    }
+}; 
