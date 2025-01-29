@@ -100,11 +100,11 @@ const ProbabilityCalculator = () => {
     };
 
     const gradeColors = {
-        sGrade: 'rgb(255, 215, 0)',
-        epic: 'rgb(148, 0, 211)',
-        rare: 'rgb(0, 0, 255)',
-        uncommon: 'rgb(0, 128, 0)',
-        common: 'rgb(128, 128, 128)'
+        'S급 에픽': 'text-red-500',
+        '에픽': 'text-orange-400',
+        '희귀': 'text-blue-500',
+        '우수': 'text-green-500',
+        '일반': 'text-gray-500'
     };
 
     const gradeNames = {
@@ -209,6 +209,39 @@ const ProbabilityCalculator = () => {
                 </div>
             ) : results && (
                 <div className="results-section space-y-8">
+                    {/* 등급별 획득 요약 테이블 추가 */}
+                    <div className="bg-white rounded-lg shadow">
+                        <div className="p-4">
+                            <h3 className="text-lg font-medium mb-4">등급별 평균 획득량 요약</h3>
+                            <div className="overflow-hidden rounded-lg border border-gray-200">
+                                <table className="min-w-full divide-y divide-gray-200">
+                                    <thead className="bg-gray-50">
+                                        <tr>
+                                            <th className="px-6 py-3 text-left text-sm font-medium text-gray-500">등급</th>
+                                            <th className="px-6 py-3 text-right text-sm font-medium text-gray-500">수량</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="bg-white divide-y divide-gray-200">
+                                        {Object.entries(results)
+                                            .filter(([key]) => key !== 'itemStats' && results[key]?.mean)
+                                            .map(([grade, stats]) => (
+                                                <tr key={grade}>
+                                                    <td className="px-6 py-4 whitespace-nowrap">
+                                                        <span className={`${gradeColors[gradeNames[grade]]} font-medium`}>
+                                                            {gradeNames[grade]}
+                                                        </span>
+                                                    </td>
+                                                    <td className="px-6 py-4 text-right whitespace-nowrap">
+                                                        {Math.round(stats.mean)}
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* 아이템별 획득 기댓값 테이블 */}
                     {results.itemStats && results.itemStats.length > 0 && (
                         <div className="bg-white rounded-lg shadow">
