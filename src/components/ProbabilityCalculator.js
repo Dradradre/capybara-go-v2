@@ -12,7 +12,7 @@ import {
     Legend
 } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
-import { sGradeRotation } from '../data/itemData';
+import { sGradeRotation, itemTypes } from '../data/itemData';
 
 ChartJS.register(
     CategoryScale,
@@ -44,9 +44,14 @@ const ProbabilityCalculator = () => {
         let sGradePity = parseInt(inputs.sGradeCount);
         const pulls = parseInt(inputs.gachaCount);
         const targetItem = sGradeRotation[inputs.rotation].find(i => i.name === inputs.targetItem);
-        
+        const targetType = itemTypes[targetItem.type];
+        const totalEpicItems = targetType.items.length;
+        const epicProb = 0.1 / totalEpicItems; // 에픽 확률 계산
         // 전체 S급 에픽 가중치 합 계산
+
         const totalSGradeWeight = sGradeRotation[inputs.rotation].reduce((sum, item) => sum + item.rate, 0);
+        const normalizedRate = targetItem.rate / totalSGradeWeight; // 추가된 코드
+
         
         for (let i = 0; i < pulls; i++) {
             // S급 천장
@@ -60,23 +65,32 @@ const ProbabilityCalculator = () => {
             
             // 에픽 천장
             if (epicPity <= 0) {
-                // 에픽 천장에서 S급이 나올 확률 (1.6%)에서 특정 S급이 나올 확률
-                if (Math.random() < (0.016 * targetItem.rate / totalSGradeWeight)) obtained++;
+                // const epicProb = (1 / totalEpicItems) * 0.1; 
+                if (Math.random() < epicProb) obtained++;
                 epicPity = 10;
                 continue;
             }
 
-            // 일반 확률
+            // const epicItems = itemTypes[targetItem.type].items;
+            // const epicChance = 0.1; // 에픽 전체 확률 10%
+            // if (Math.random() < (1 / epicItems.length) * epicChance) obtained++;
+
+            // 일반 뽑기
             const random = Math.random();
             if (random < 0.016) { // S급 에픽이 나올 경우
                 // 해당 S급 에픽이 나올 확률
-                if (Math.random() < (targetItem.rate / totalSGradeWeight)) obtained++;
+                if (Math.random() < normalizedRate) obtained++;
                 sGradePity = 60;
                 epicPity = 10;
+            } else if (random < 0.116) {
+                // 에픽이 나올 경우
+                if (Math.random() < epicProb) obtained++;
+                epicPity = 10;
+            } else {
+                // 일반 뽑기
+                sGradePity--;
+                epicPity--;
             }
-
-            sGradePity--;
-            epicPity--;
         }
 
         return obtained;

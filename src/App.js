@@ -2,6 +2,8 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import GachaSimulator from './components/GachaSimulator';
 import ProbabilityCalculator from './components/ProbabilityCalculator';
+import { HomeIcon, CalculatorIcon } from './icons'; // 아이콘 컴포넌트 추가
+import { NavLink } from 'react-router-dom';
 import './App.css';
 
 function App() {
@@ -9,11 +11,16 @@ function App() {
         <Router>
             <div className="min-h-screen bg-gray-50">
                 {/* 상단 네비게이션 */}
-                <nav className="sticky top-0 bg-white border-b border-gray-200 backdrop-blur-lg bg-opacity-80">
-                    <div className="max-w-lg mx-auto">
-                        <div className="flex p-1 gap-1">
-                            <NavLink to="/">가챠 시뮬레이터</NavLink>
-                            <NavLink to="/calculator">확률 계산기</NavLink>
+                <nav className="sticky top-0 bg-white shadow-md">
+                    <div className="max-w-lg mx-auto flex justify-between items-center px-4 py-2">
+                        <div className="text-xl font-bold text-blue-600">🎲 화산 시뮬레이터</div>
+                        <div className="flex space-x-4">
+                            <CustomNavLink to="/" icon={<HomeIcon />}>
+                                가챠 시뮬레이터
+                            </CustomNavLink>
+                            <CustomNavLink to="/calculator" icon={<CalculatorIcon />}>
+                                확률 계산기
+                            </CustomNavLink>
                         </div>
                     </div>
                 </nav>
@@ -44,21 +51,20 @@ function App() {
 }
 
 // 커스텀 NavLink 컴포넌트
-function NavLink({ to, children }) {
-    return (
-        <Link
-            to={to}
-            className={({ isActive }) => `
-                relative flex-1 px-4 py-2.5 text-center transition-all duration-200
-                ${isActive ? 'text-blue-600 font-semibold' : 'text-gray-600 hover:text-gray-900'}
-                before:content-[''] before:absolute before:bottom-0 before:left-0 before:w-full 
-                before:h-0.5 before:bg-blue-600 before:transition-transform before:duration-200
-                ${isActive ? 'before:scale-x-100' : 'before:scale-x-0 hover:before:scale-x-100'}
-            `}
-        >
-            {children}
-        </Link>
-    );
+function CustomNavLink({ to, children, icon }) {
+  return (
+      <NavLink
+          to={to}
+          className={({ isActive }) =>
+              `flex items-center space-x-2 px-3 py-2 rounded-lg 
+              ${isActive ? 'bg-blue-100 text-blue-600' : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'} 
+              transition-all duration-200`
+          }
+      >
+          {icon}
+          <span>{children}</span>
+      </NavLink>
+  );
 }
 
 export default App;
