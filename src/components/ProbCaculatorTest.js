@@ -220,23 +220,27 @@ const ProbabilityCalculator = () => {
                                             <div key={index} className="bg-gray-50 p-4 rounded-lg">
                                                 <div className="flex flex-col space-y-2">
                                                     <div className="flex justify-between items-center">
-                                                        <span className="font-medium">{item.name}</span>
-                                                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getGradeStyle(item.grade)}`}>
-                                                            {item.grade}
+                                                        <span className="font-medium">{item?.name || '알 수 없음'}</span>
+                                                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getGradeStyle(item?.grade || '일반')}`}>
+                                                            {item?.grade || '일반'}
                                                         </span>
                                                     </div>
                                                     <div className="text-sm text-gray-600">
                                                         <div className="flex justify-between">
                                                             <span>유형:</span>
-                                                            <span>{item.type}</span>
+                                                            <span>{item?.type || '기타'}</span>
                                                         </div>
                                                         <div className="flex justify-between">
                                                             <span>기댓값:</span>
-                                                            <span className="font-medium">{item.mean.toFixed(2)}개</span>
+                                                            <span className="font-medium">
+                                                                {(item?.mean || 0).toFixed(2)} ± {((item?.confidence95?.upper - item?.confidence95?.lower) / 3.92).toFixed(2)}개
+                                                            </span>
                                                         </div>
                                                         <div className="flex justify-between">
                                                             <span>95% 신뢰구간:</span>
-                                                            <span>{item.confidence95.lower.toFixed(2)} ~ {item.confidence95.upper.toFixed(2)}개</span>
+                                                            <span>
+                                                                {(item?.confidence95?.lower || 0).toFixed(2)} ~ {(item?.confidence95?.upper || 0).toFixed(2)}개
+                                                            </span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -251,53 +255,53 @@ const ProbabilityCalculator = () => {
                     {/* 등급별 획득 분포 차트 */}
                     <div className="grid grid-cols-1 gap-8">
                         {Object.entries(results)
-                            .filter(([key]) => key !== 'itemStats')
+                            .filter(([key]) => key !== 'itemStats' && results[key]?.chartData)
                             .map(([grade, stats]) => (
                                 <div key={grade} className="bg-white p-4 rounded-lg shadow">
                                     <h3 className="text-lg font-medium mb-4">{gradeNames[grade]} 획득 분포</h3>
                                     <div className="aspect-w-16 aspect-h-9">
-                                        {stats.chartData && (
-                                            <Bar
-                                                data={stats.chartData}
-                                                options={{
-                                                    responsive: true,
-                                                    maintainAspectRatio: true,
-                                                    scales: {
-                                                        y: {
-                                                            beginAtZero: true,
-                                                            title: {
-                                                                display: true,
-                                                                text: '횟수'
-                                                            }
-                                                        },
-                                                        x: {
-                                                            title: {
-                                                                display: true,
-                                                                text: '획득 개수'
-                                                            }
-                                                        }
-                                                    },
-                                                    plugins: {
+                                        <Bar
+                                            data={stats.chartData}
+                                            options={{
+                                                responsive: true,
+                                                maintainAspectRatio: true,
+                                                scales: {
+                                                    y: {
+                                                        beginAtZero: true,
                                                         title: {
                                                             display: true,
-                                                            text: `${gradeNames[grade]} 획득 분포`
-                                                        },
-                                                        legend: {
-                                                            display: true
+                                                            text: '횟수'
+                                                        }
+                                                    },
+                                                    x: {
+                                                        title: {
+                                                            display: true,
+                                                            text: '획득 개수'
                                                         }
                                                     }
-                                                }}
-                                            />
-                                        )}
+                                                },
+                                                plugins: {
+                                                    title: {
+                                                        display: true,
+                                                        text: `${gradeNames[grade]} 획득 분포`
+                                                    },
+                                                    legend: {
+                                                        display: true
+                                                    }
+                                                }
+                                            }}
+                                        />
                                     </div>
                                     <div className="mt-4 text-sm space-y-1">
                                         <p className="flex justify-between">
                                             <span>평균:</span>
-                                            <span>{stats.mean.toFixed(2)}개</span>
+                                            <span>{stats?.mean?.toFixed(2) || '0.00'}개</span>
                                         </p>
                                         <p className="flex justify-between">
                                             <span>95% 신뢰구간:</span>
-                                            <span>{stats.confidence95.lower.toFixed(2)} ~ {stats.confidence95.upper.toFixed(2)}개</span>
+                                            <span>
+                                                {stats?.confidence95?.lower?.toFixed(2) || '0.00'} ~ {stats?.confidence95?.upper?.toFixed(2) || '0.00'}개
+                                            </span>
                                         </p>
                                     </div>
                                 </div>

@@ -148,58 +148,53 @@ function runSingleSimulation(gachaCount, currentEpicCount, currentSGradeCount, r
     };
 }
 
-// 통계 계산
-function calculateStats(results) {
-    const mean = results.reduce((a, b) => a + b, 0) / results.length;
-    const variance = results.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / results.length;
-    const stdDev = Math.sqrt(variance);
-
-    // 히스토그램 데이터
-    const histogram = results.reduce((acc, val) => {
-        acc[val] = (acc[val] || 0) + 1;
-        return acc;
-    }, {});
-
-    // 정규분포 근사
-    const normalPoints = [];
-    const minX = Math.max(0, Math.floor(mean - 4 * stdDev));
-    const maxX = Math.ceil(mean + 4 * stdDev);
+// 신뢰구간 계산을 위한 유틸리티 함수
+const calculateConfidenceInterval = (mean, stdDev, n, confidence = 0.95) => {
+    const zValues = {
+        0.90: 1.645,
+        0.95: 1.96,
+        0.99: 2.576
+    };
+    const z = zValues[confidence] || 1.96;
+    const SE = stdDev / Math.sqrt(n);
     
-    for (let x = minX; x <= maxX; x++) {
-        const y = (1 / (stdDev * Math.sqrt(2 * Math.PI))) *
-                 Math.exp(-0.5 * Math.pow((x - mean) / stdDev, 2)) *
-                 results.length;
-        normalPoints.push({ x, y });
-    }
+    return {
+        lower: Math.max(0, mean - z * SE),
+        upper: mean + z * SE
+    };
+};
+
+function calculateStats(results) {
+    const n = results.length;
+    const mean = results.reduce((a, b) => a + b, 0) / n;
+    
+    const variance = results.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / n;
+    const stdDev = Math.sqrt(variance);
+    
+    const confidence95 = calculateConfidenceInterval(mean, stdDev, n, 0.95);
+
+    // 차트 데이터 생성 (정규분포 근사 사용)
+    const counts = {};
+    results.forEach(value => {
+        counts[value] = (counts[value] || 0) + 1;
+    });
+
+    const chartData = {
+        labels: Object.keys(counts),
+        datasets: [{
+            label: '획득 횟수',
+            data: Object.values(counts).map(v => v / n), // 상대 빈도로 변환
+            backgroundColor: 'rgba(54, 162, 235, 0.5)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+        }]
+    };
 
     return {
         mean,
         stdDev,
-        confidence95: {
-            lower: Math.max(0, mean - 1.96 * stdDev),
-            upper: mean + 1.96 * stdDev
-        },
-        chartData: {
-            labels: Object.keys(histogram),
-            datasets: [
-                {
-                    label: '실제 분포',
-                    data: Object.values(histogram),
-                    type: 'bar',
-                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: '정규분포 근사',
-                    data: normalPoints.map(p => p.y),
-                    borderColor: 'rgb(54, 162, 235)',
-                    borderWidth: 2,
-                    fill: false,
-                    type: 'line'
-                }
-            ]
-        }
+        confidence95,
+        chartData
     };
 }
 
