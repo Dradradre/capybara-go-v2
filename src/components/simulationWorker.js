@@ -1,4 +1,5 @@
 /* eslint-disable no-restricted-globals */
+/* eslint-disable default-case */
 // simulationWorker.js
 import { sGradeRotation, normalWeapons, normalArmors, normalNecklaces, normalRings } from '../data/itemData';
 
