@@ -211,38 +211,38 @@ const ProbabilityCalculator = () => {
                 <div className="results-section space-y-8">
                     {/* 아이템별 획득 기댓값 테이블 */}
                     {results.itemStats && results.itemStats.length > 0 && (
-                        <div className="bg-white rounded-lg shadow overflow-hidden">
-                            <div className="p-6">
+                        <div className="bg-white rounded-lg shadow">
+                            <div className="p-4">
                                 <h3 className="text-lg font-medium mb-4">아이템별 획득 기댓값</h3>
                                 <div className="overflow-x-auto">
-                                    <table className="min-w-full divide-y divide-gray-200">
-                                        <thead className="bg-gray-50">
-                                            <tr>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">아이템</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">등급</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">유형</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">기댓값</th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">95% 신뢰구간</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody className="bg-white divide-y divide-gray-200">
-                                            {results.itemStats.map((item, index) => (
-                                                <tr key={index} className="hover:bg-gray-50">
-                                                    <td className="px-6 py-4 whitespace-nowrap">{item.name}</td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">
-                                                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getGradeStyle(item.grade)}`}>
+                                    <div className="grid grid-cols-1 gap-4">
+                                        {results.itemStats.map((item, index) => (
+                                            <div key={index} className="bg-gray-50 p-4 rounded-lg">
+                                                <div className="flex flex-col space-y-2">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="font-medium">{item.name}</span>
+                                                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getGradeStyle(item.grade)}`}>
                                                             {item.grade}
                                                         </span>
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap">{item.type}</td>
-                                                    <td className="px-6 py-4 whitespace-nowrap font-medium">{item.mean.toFixed(2)}개</td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-gray-600">
-                                                        {item.confidence95.lower.toFixed(2)} ~ {item.confidence95.upper.toFixed(2)}개
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                                    </div>
+                                                    <div className="text-sm text-gray-600">
+                                                        <div className="flex justify-between">
+                                                            <span>유형:</span>
+                                                            <span>{item.type}</span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span>기댓값:</span>
+                                                            <span className="font-medium">{item.mean.toFixed(2)}개</span>
+                                                        </div>
+                                                        <div className="flex justify-between">
+                                                            <span>95% 신뢰구간:</span>
+                                                            <span>{item.confidence95.lower.toFixed(2)} ~ {item.confidence95.upper.toFixed(2)}개</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -253,43 +253,52 @@ const ProbabilityCalculator = () => {
                         {Object.entries(results)
                             .filter(([key]) => key !== 'itemStats')
                             .map(([grade, stats]) => (
-                                <div key={grade} className="bg-white p-6 rounded-lg shadow">
+                                <div key={grade} className="bg-white p-4 rounded-lg shadow">
                                     <h3 className="text-lg font-medium mb-4">{gradeNames[grade]} 획득 분포</h3>
-                                    {stats.chartData && (
-                                        <Bar
-                                            data={stats.chartData}
-                                            options={{
-                                                responsive: true,
-                                                scales: {
-                                                    y: {
-                                                        beginAtZero: true,
-                                                        title: {
-                                                            display: true,
-                                                            text: '횟수'
+                                    <div className="aspect-w-16 aspect-h-9">
+                                        {stats.chartData && (
+                                            <Bar
+                                                data={stats.chartData}
+                                                options={{
+                                                    responsive: true,
+                                                    maintainAspectRatio: true,
+                                                    scales: {
+                                                        y: {
+                                                            beginAtZero: true,
+                                                            title: {
+                                                                display: true,
+                                                                text: '횟수'
+                                                            }
+                                                        },
+                                                        x: {
+                                                            title: {
+                                                                display: true,
+                                                                text: '획득 개수'
+                                                            }
                                                         }
                                                     },
-                                                    x: {
+                                                    plugins: {
                                                         title: {
                                                             display: true,
-                                                            text: '획득 개수'
+                                                            text: `${gradeNames[grade]} 획득 분포`
+                                                        },
+                                                        legend: {
+                                                            display: true
                                                         }
                                                     }
-                                                },
-                                                plugins: {
-                                                    title: {
-                                                        display: true,
-                                                        text: `${gradeNames[grade]} 획득 분포`
-                                                    },
-                                                    legend: {
-                                                        display: true
-                                                    }
-                                                }
-                                            }}
-                                        />
-                                    )}
-                                    <div className="mt-4 text-sm">
-                                        <p>평균: {stats.mean.toFixed(2)}개</p>
-                                        <p>95% 신뢰구간: {stats.confidence95.lower.toFixed(2)} ~ {stats.confidence95.upper.toFixed(2)}개</p>
+                                                }}
+                                            />
+                                        )}
+                                    </div>
+                                    <div className="mt-4 text-sm space-y-1">
+                                        <p className="flex justify-between">
+                                            <span>평균:</span>
+                                            <span>{stats.mean.toFixed(2)}개</span>
+                                        </p>
+                                        <p className="flex justify-between">
+                                            <span>95% 신뢰구간:</span>
+                                            <span>{stats.confidence95.lower.toFixed(2)} ~ {stats.confidence95.upper.toFixed(2)}개</span>
+                                        </p>
                                     </div>
                                 </div>
                             ))}
