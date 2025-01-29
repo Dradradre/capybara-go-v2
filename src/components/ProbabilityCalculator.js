@@ -29,8 +29,8 @@ ChartJS.register(
 const ProbabilityCalculator = () => {
     const [inputs, setInputs] = useState({
         gachaCount: '',    // 총 뽑기 횟수
-        epicCount: '10',   // 현재 에픽 카운터
-        sGradeCount: '60', // 현재 S급 카운터
+        epicCount: '',   // 현재 에픽 카운터
+        sGradeCount: '', // 현재 S급 카운터
         rotation: 'A',     // 로테이션
         targetItem: '',   // 목표 장비
         targetGrade: ''   // 목표 등급
