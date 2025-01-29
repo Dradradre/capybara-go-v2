@@ -40,6 +40,11 @@ const ProbabilityCalculator = () => {
     const [progress, setProgress] = useState(0);
     const workerRef = useRef();
 
+    // 검색 및 필터링을 위한 상태 추가
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedGrade, setSelectedGrade] = useState('all');
+    const [selectedType, setSelectedType] = useState('all');
+
     useEffect(() => {
         workerRef.current = new Worker(new URL('./simulationWorker.js', import.meta.url));
         workerRef.current.onmessage = (e) => {
@@ -114,6 +119,22 @@ const ProbabilityCalculator = () => {
         uncommon: '우수',
         common: '일반'
     };
+
+    // 필터링된 아이템 목록을 계산하는 함수
+    const getFilteredItems = () => {
+        if (!results?.itemStats) return [];
+        
+        return results.itemStats.filter(item => {
+            const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+            const matchesGrade = selectedGrade === 'all' || item.grade === selectedGrade;
+            const matchesType = selectedType === 'all' || item.type === selectedType;
+            
+            return matchesSearch && matchesGrade && matchesType;
+        });
+    };
+
+    // 아이템 타입 목록 생성
+    const itemTypes = [...new Set(results?.itemStats?.map(item => item.type) || [])];
 
     return (
         <div className="calculator-container p-4">
@@ -247,9 +268,52 @@ const ProbabilityCalculator = () => {
                         <div className="bg-white rounded-lg shadow">
                             <div className="p-4">
                                 <h3 className="text-lg font-medium mb-4">아이템별 획득 기댓값</h3>
+                                
+                                {/* 검색 및 필터 섹션 */}
+                                <div className="mb-4 space-y-3">
+                                    {/* 검색창 */}
+                                    <div className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            placeholder="아이템 이름 검색..."
+                                            value={searchTerm}
+                                            onChange={(e) => setSearchTerm(e.target.value)}
+                                            className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        />
+                                    </div>
+                                    
+                                    {/* 필터 옵션 */}
+                                    <div className="flex gap-2">
+                                        <select
+                                            value={selectedGrade}
+                                            onChange={(e) => setSelectedGrade(e.target.value)}
+                                            className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        >
+                                            <option value="all">모든 등급</option>
+                                            <option value="S급 에픽">S급 에픽</option>
+                                            <option value="에픽">에픽</option>
+                                            <option value="희귀">희귀</option>
+                                            <option value="우수">우수</option>
+                                            <option value="일반">일반</option>
+                                        </select>
+                                        
+                                        <select
+                                            value={selectedType}
+                                            onChange={(e) => setSelectedType(e.target.value)}
+                                            className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                        >
+                                            <option value="all">모든 유형</option>
+                                            {itemTypes.map(type => (
+                                                <option key={type} value={type}>{type}</option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+
+                                {/* 필터링된 결과 표시 */}
                                 <div className="overflow-x-auto">
                                     <div className="grid grid-cols-1 gap-4">
-                                        {results.itemStats.map((item, index) => (
+                                        {getFilteredItems().map((item, index) => (
                                             <div key={index} className="bg-gray-50 p-4 rounded-lg">
                                                 <div className="flex flex-col space-y-2">
                                                     <div className="flex justify-between items-center">
@@ -279,6 +343,13 @@ const ProbabilityCalculator = () => {
                                                 </div>
                                             </div>
                                         ))}
+                                        
+                                        {/* 검색 결과가 없을 때 */}
+                                        {getFilteredItems().length === 0 && (
+                                            <div className="text-center py-4 text-gray-500">
+                                                검색 결과가 없습니다.
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>
