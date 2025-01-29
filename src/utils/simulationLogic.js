@@ -1,3 +1,4 @@
+/* eslint-disable default-case */
 import { sGradeRotation, normalWeapons, normalArmors, normalNecklaces, normalRings } from '../data/itemData';
 
 export const getRandomItem = (grade, rotation) => {
