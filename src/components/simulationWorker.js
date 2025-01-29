@@ -199,9 +199,20 @@ function calculateStats(results) {
     };
 }
 
+// Web Worker 초기화 최적화
+let cachedResults = new Map();
+
 // Worker 메시지 핸들러
 self.onmessage = (e) => {
     const { simulationParams } = e.data;
+    const cacheKey = JSON.stringify(simulationParams);
+    
+    // 캐시된 결과가 있으면 바로 반환
+    if (cachedResults.has(cacheKey)) {
+        self.postMessage(cachedResults.get(cacheKey));
+        return;
+    }
+    
     const SIMULATION_COUNT = 10000;
     
     const gradeResults = {
@@ -216,10 +227,10 @@ self.onmessage = (e) => {
 
     // 진행 상태 보고 함수
     const reportProgress = (current) => {
-        const progress = (current / SIMULATION_COUNT) * 100;
+        const progress = Math.floor((current / SIMULATION_COUNT) * 100);  // Math.floor로 정수화
         self.postMessage({
             type: 'progress',
-            progress: Math.min(progress, 99) // 100%는 최종 결과 처리 후에 표시
+            progress: Math.min(progress, 99)
         });
     };
 
@@ -288,6 +299,18 @@ self.onmessage = (e) => {
         return b.mean - a.mean;
     });
 
+    // 결과 캐싱
+    cachedResults.set(cacheKey, {
+        ...stats,
+        itemStats
+    });
+    
+    // 캐시 크기 제한
+    if (cachedResults.size > 100) {
+        const firstKey = cachedResults.keys().next().value;
+        cachedResults.delete(firstKey);
+    }
+    
     self.postMessage({
         ...stats,
         itemStats

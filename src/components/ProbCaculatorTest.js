@@ -4,26 +4,19 @@ import {
     Chart as ChartJS,
     CategoryScale,
     LinearScale,
-    PointElement,
-    LineElement,
     BarElement,
     Title,
     Tooltip,
-    LineController,
-    Legend
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 
+// 필요한 컴포넌트만 등록
 ChartJS.register(
     CategoryScale,
     LinearScale,
-    PointElement,
-    LineElement,
     BarElement,
-    LineController,
     Title,
     Tooltip,
-    Legend
 );
 
 const ProbabilityCalculator = () => {
@@ -48,7 +41,7 @@ const ProbabilityCalculator = () => {
         workerRef.current = new Worker(new URL('./simulationWorker.js', import.meta.url));
         workerRef.current.onmessage = (e) => {
             if (e.data.type === 'progress') {
-                setProgress(e.data.progress);
+                setProgress(Math.floor(e.data.progress));  // 소수점 제거
             } else {
                 const processedData = {
                     ...e.data,
@@ -78,7 +71,7 @@ const ProbabilityCalculator = () => {
             return false;
         }
         if (!inputs.sGradeCount || inputs.sGradeCount < 1 || inputs.sGradeCount > 60) {
-            alert('S급 카운트는 1에서 60 사이의 값이어야 합니다.');
+            alert('S급 카운터는 1에서 60 사이의 값이어야 합니다.');
             return false;
         }
         if (!inputs.rotation) {
@@ -202,32 +195,18 @@ const ProbabilityCalculator = () => {
                 </div>
             </div>
 
-            {isLoading ? (
-                <div className="flex flex-col items-center justify-center h-64 bg-white rounded-lg shadow p-8">
-                    <div className="w-full max-w-md">
-                        <div className="flex justify-between mb-2">
-                            <span className="text-sm font-medium text-gray-700">시뮬레이션 진행중...</span>
-                            <span className="text-sm font-medium text-indigo-600">{progress}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2.5">
-                            <div 
-                                className="bg-indigo-600 h-2.5 rounded-full transition-all duration-300" 
-                                style={{ width: `${progress}%` }}
-                            ></div>
-                        </div>
-                        <div className="mt-4 text-center text-sm text-gray-500">
-                            {progress < 100 ? (
-                                <>
-                                    <p>총 10,000회 시뮬레이션 중 {Math.floor(progress * 100)}회 완료</p>
-                                    <p className="mt-2">잠시만 기다려주세요...</p>
-                                </>
-                            ) : (
-                                <p>결과 처리중...</p>
-                            )}
+            {isLoading && (
+                <div className="loading-overlay">
+                    <div className="loading-content">
+                        <div className="spinner"></div>
+                        <div className="progress-text">
+                            {Math.round(progress)}% 완료
                         </div>
                     </div>
                 </div>
-            ) : results && (
+            )}
+
+            {results && (
                 <div className="results-section space-y-8">
                     {/* 등급별 획득 요약 테이블 추가 */}
                     <div className="bg-white rounded-lg shadow">
