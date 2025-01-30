@@ -50,7 +50,7 @@ const CURRENCY_RATES = {
     },
     epicWeapon: {
         name: '에픽 무기',
-        image: '/EpicEquipment_Weapon.webp',
+        image: '/EpicEquipment_weapon.webp',
         gemValue: 5960
     },
     epicArmor: {
@@ -72,7 +72,7 @@ const CURRENCY_RATES = {
     sEquipmentWeapon: {
         name: 'S급 에픽 무기 (저격 기준)',
         gemValue: 73040,  // (0.2% + 60회보장) 기준
-        image: '/SEquipment_weapon.webp'
+        image: '/SEquipment_Weapon.webp'
     },
     sEquipmentArmor: {
         name: 'S급 에픽 방어구 (저격 기준)',
