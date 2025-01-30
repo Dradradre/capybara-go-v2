@@ -71,17 +71,17 @@ const CURRENCY_RATES = {
     // S급 에픽 장비
     sEquipmentWeapon: {
         name: 'S급 에픽 무기',
-        gemValue: 73040,  // (0.2% + 60회 1/8확률) 기준
+        gemValue: 15937,  // (0.2% + 60회보장) 기준
         image: '/SEquipment_Weapon.webp'
     },
     sEquipmentArmor: {
         name: 'S급 에픽 방어구',
-        gemValue: 73040,  // (0.2% + 60회 1/8확률) 기준
+        gemValue: 15937,  // (0.2% + 60회보장) 기준
         image: '/SEquipment_Armor.webp'
     },
     sEquipmentAccessory: {
         name: 'S급 에픽 장신구',
-        gemValue: 36475,  // (0.4% + 60회 1/4확률) 기준
+        gemValue: 14396,  // (0.4% + 60회보장) 기준
         image: '/SEquipment_Accessory.webp'
     },
     // 특수 재화 (현금 전용) - 주석 처리
@@ -236,16 +236,8 @@ function CurrencyCalculator() {
         return `${(value * 10.833).toLocaleString('ko-KR', { maximumFractionDigits: 2 })}원/개`;
     };
 
-    const handleCurrencyToggle = () => {
-        if (showGems) {
-            setShowWarningModal(true);
-        } else {
-            setShowGems(true);
-        }
-    };
-
     return (
-        <div className="space-y-4 relative">
+        <div className="relative min-h-screen pb-20">
             <h1 className="text-lg font-semibold p-4 bg-indigo-500 text-white rounded-lg">
                 재화 가치 계산기
             </h1>
@@ -253,46 +245,29 @@ function CurrencyCalculator() {
             <CurrencyGuide isOpen={isGuideOpen} setIsOpen={setIsGuideOpen} />
             <EquationGuide />
 
-            {/* 우측 하단 고정 버튼들 */}
-            <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
-                {/* 토글 버튼 */}
-                <div className="flex flex-col items-end gap-1">
-                    <button
-                        onClick={handleCurrencyToggle}
-                        className="inline-flex items-center justify-center w-[100px] px-4 py-2 bg-indigo-500 hover:bg-indigo-600 rounded-lg transition-all duration-300"
-                    >
-                        <div className="flex items-center justify-center gap-2">
-                            {showGems ? (
-                                <>
-                                    <img 
-                                        src="/Jewel.webp" 
-                                        alt="보석" 
-                                        className="w-5 h-5 object-contain"
-                                    />
-                                    <span className="font-medium text-white">보석</span>
-                                </>
-                            ) : (
-                                <>
-                                    <div className="w-5 h-5 flex items-center justify-center bg-white rounded-full">
-                                        <span className="font-bold text-indigo-500">₩</span>
-                                    </div>
-                                    <span className="font-medium text-white">원화</span>
-                                </>
-                            )}
-                        </div>
-                    </button>
-                    <span className="text-xs text-gray-500">
-                        {showGems 
-                            ? "버튼 터치시 재화 가치가 원화로 변경" 
-                            : "버튼 터치시 재화 가치가 보석으로 변경"
-                        }
-                    </span>
-                </div>
-
-                {/* 초기화 버튼 */}
+            {/* 고정된 버튼 그룹 */}
+            <div className="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-40">
                 <button
-                    onClick={handleReset}
-                    className="w-[100px] bg-indigo-500 hover:bg-indigo-600 text-white text-sm px-4 py-2 rounded-lg shadow-sm"
+                    onClick={() => {
+                        if (showGems) {  // 원화로 바꿀 때만 경고 모달 표시
+                            setShowWarningModal(true);
+                        } else {
+                            setShowGems(true);  // 보석으로 바로 전환
+                        }
+                    }}
+                    className="w-32 h-12 flex items-center justify-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-colors"
+                >
+                    <img 
+                        src={showGems ? "/Won.webp" : "/Jewel.webp"} 
+                        alt={showGems ? "원화" : "보석"} 
+                        className="w-6 h-6" 
+                    />
+                    <span>{showGems ? "단위 변경" : "단위 변경"}</span>
+                </button>
+                
+                <button
+                    onClick={() => handleReset()}
+                    className="w-32 h-12 flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-colors"
                 >
                     입력 초기화
                 </button>
@@ -618,7 +593,7 @@ function CurrencyCalculator() {
                         <div className="flex justify-end gap-2">
                             <button
                                 onClick={() => {
-                                    setShowGems(false);
+                                    setShowGems(false);  // 원화로 전환
                                     setShowWarningModal(false);
                                 }}
                                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
