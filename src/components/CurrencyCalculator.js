@@ -5,38 +5,33 @@ import EquationGuide from './EquationGuide';
 const CURRENCY_RATES = {
     gem: { 
         name: '보석', 
-        rate: 10.833,
+        gemValue: 1,  // 기준 재화
         image: '/Jewel.webp'
     },
     petEgg: { 
         name: '펫 알', 
-        rate: 9.28,
+        gemValue: 0.857,  // 30보석/35개
         image: '/PetEgg.webp'
     },
     dragonBook: { 
         name: '드래곤 책', 
-        rate: 1300,
+        gemValue: 120,  // 600보석/5개
         image: '/DragonBook.webp'
     },
     normalBook: { 
         name: '일반 책', 
-        rate: 866.4,
+        gemValue: 80,  // 400보석/5개
         image: '/GeneralBook.webp'
     },
     key: { 
         name: '열쇠', 
-        rate: 3227.03,
+        gemValue: 298,  // 2980보석/10개
         image: '/Key.webp'
     },
     goldenHorseshoe: { 
         name: '황금 말굽쇠', 
-        rate: 21.66,
+        gemValue: 20,  // 1000보석/50개
         image: '/HorseShoe.webp'
-    },
-    divineHammer: { 
-        name: '신위 망치', 
-        rate: 187.5,
-        image: '/Hammer.webp'
     },
     blueprint: { 
         name: '장비 도면', 
@@ -45,44 +40,63 @@ const CURRENCY_RATES = {
     },
     gemBox: {
         name: '보석 상자',
-        rate: 9963.6,
+        gemValue: 920,  // 230보석 * 4회
         image: '/BosuckBox.webp'
     },
     sEquipmentPickup: {
-        name: 'S급 에픽 (픽업)',
-        rate: 580930,
-        image: '/SEquipment0.2prob.webp'
-    },
-    sEquipment02: {
-        name: 'S급 에픽 (0.2%)',
-        rate: 726160,
-        image: '/SEquipment0.2prob.webp'
-    },
-    sEquipment04: {
-        name: 'S급 에픽 (0.4%)',
-        rate: 363080,
-        image: '/SEquipment0.4prob.webp'
+        name: 'S급 에픽 픽업권',
+        gemValue: 53640,  // 180회 보장
+        image: '/SEpicEquipment_pickup.webp'
     },
     epicWeapon: {
         name: '에픽 무기',
-        rate: 80680,
-        image: '/EpicEquipment_weapon.webp'
+        image: '/EpicEquipment_Weapon.webp',
+        gemValue: 5960
     },
     epicArmor: {
         name: '에픽 방어구',
-        rate: 40340,
-        image: '/EpicEquipment_Armor.webp'
+        image: '/EpicEquipment_Armor.webp',
+        gemValue: 9933
     },
     epicAccessory: {
         name: '에픽 목걸이/반지',
-        rate: 20170,
-        image: '/EpicEquipment_Neckless.webp'
+        image: '/EpicEquipment_Neckless.webp',
+        gemValue: 4967
     },
-    maintanenceStone: {
+    younggeolContract: {
+        name: '영걸의 계약',
+        gemValue: 7450,  // 298/0.04
+        image: '/ContractOfHero.webp'
+    },
+    // S급 에픽 장비
+    sEquipmentWeapon: {
+        name: 'S급 에픽 무기',
+        gemValue: 73040,  // (0.2% + 60회 1/8확률) 기준
+        image: '/SEquipment_Weapon.webp'
+    },
+    sEquipmentArmor: {
+        name: 'S급 에픽 방어구',
+        gemValue: 73040,  // (0.2% + 60회 1/8확률) 기준
+        image: '/SEquipment_Armor.webp'
+    },
+    sEquipmentAccessory: {
+        name: 'S급 에픽 장신구',
+        gemValue: 36475,  // (0.4% + 60회 1/4확률) 기준
+        image: '/SEquipment_Accessory.webp'
+    },
+    // 특수 재화 (현금 전용) - 주석 처리
+    /*
+    yujiStone: {
         name: '유지석',
-        rate: 9100.04,
-        image: '/Maintanence Stone.webp'
+        gemValue: 840,  // 9,100.04원 기준
+        image: '/YujiStone.webp'
     },
+    sinwiHammer: {
+        name: '신위 망치',
+        gemValue: 17.31,  // 187.505원 기준
+        image: '/SinwiHammer.webp'
+    },
+    */
 };
 
 function CurrencyCalculator() {
@@ -93,6 +107,8 @@ function CurrencyCalculator() {
     const [selectedCurrency, setSelectedCurrency] = useState(null);
     const [isGuideOpen, setIsGuideOpen] = useState(false);
     const [showEquipmentGuide, setShowEquipmentGuide] = useState(false);
+    const [showGems, setShowGems] = useState(true);
+    const [showWarningModal, setShowWarningModal] = useState(false);
 
     useEffect(() => {
         const active = Object.entries(quantities)
@@ -102,15 +118,31 @@ function CurrencyCalculator() {
     }, [quantities]);
 
     const handleQuantityChange = (currency, value) => {
-        setQuantities(prev => ({
-            ...prev,
-            [currency]: value === '' ? 0 : parseInt(value, 10)
-        }));
+        // 빈 문자열이면 0으로 처리
+        if (value === '') {
+            setQuantities(prev => ({ ...prev, [currency]: 0 }));
+            return;
+        }
+
+        // 숫자만 허용 (음수 제외)
+        const numValue = Math.max(0, Number(value));
+        
+        // NaN이거나 무한대인 경우 이전 값 유지
+        if (isNaN(numValue) || !isFinite(numValue)) {
+            return;
+        }
+
+        setQuantities(prev => ({ ...prev, [currency]: numValue }));
     };
 
     const calculateTotal = () => {
         return Object.entries(quantities).reduce((total, [currency, quantity]) => {
-            return total + (CURRENCY_RATES[currency].rate * quantity);
+            const item = CURRENCY_RATES[currency];
+            if (!item) return total; // 존재하지 않는 아이템은 건너뛰기
+            
+            // rate가 있으면 원화 기준, gemValue가 있으면 보석 기준
+            const value = item.rate ? item.rate / 10.833 : (item.gemValue || 0);
+            return total + (value * quantity);
         }, 0);
     };
 
@@ -121,32 +153,46 @@ function CurrencyCalculator() {
     };
 
     const calculateIndividualValues = () => {
-        return activeInputs.map(key => ({
-            name: CURRENCY_RATES[key].name,
-            quantity: quantities[key],
-            value: CURRENCY_RATES[key].rate * quantities[key],
-        })).sort((a, b) => b.value - a.value);
+        return activeInputs.map(key => {
+            const item = CURRENCY_RATES[key];
+            const value = item.rate ? item.rate / 10.833 : item.gemValue;
+            return {
+                name: item.name,
+                quantity: quantities[key],
+                value: value * quantities[key],
+                isRate: !!item.rate
+            };
+        }).sort((a, b) => b.value - a.value);
     };
 
     const categories = {
         basic: [
             'gem', 'petEgg', 'dragonBook', 'normalBook', 'key', 
-            'goldenHorseshoe', 'divineHammer', 'blueprint', 'gemBox',
-            'maintanenceStone'
+            'goldenHorseshoe', 'blueprint', 'gemBox',
+            'younggeolContract'
         ],
-        sEquipment: ['sEquipmentPickup', 'sEquipment02', 'sEquipment04'],
-        epicEquipment: ['epicWeapon', 'epicArmor', 'epicAccessory']
+        epic: [
+            'epicWeapon', 'epicArmor', 'epicAccessory'
+        ],
+        sepic: [
+            'sEquipmentPickup',
+            'sEquipmentWeapon',
+            'sEquipmentArmor', 
+            'sEquipmentAccessory'
+        ]
     };
 
     // 주요 재화로 환산하는 함수
     const calculateEquivalents = (totalValue) => {
-        // 모든 재화 포함
-        return Object.entries(CURRENCY_RATES).map(([key, currency]) => ({
-            name: currency.name,
-            image: currency.image,
-            rate: currency.rate,
-            amount: Number((totalValue / currency.rate).toFixed(2))  // 소수점 둘째자리까지 반올림
-        })).sort((a, b) => a.rate - b.rate);  // 가치가 낮은 순으로 정렬
+        return Object.entries(CURRENCY_RATES).map(([key, currency]) => {
+            const rate = currency.gemValue || currency.rate;
+            return {
+                name: currency.name,
+                image: currency.image,
+                rate: rate,
+                amount: Number((totalValue / rate).toFixed(2))
+            }
+        }).sort((a, b) => a.rate - b.rate);
     };
 
     const getCurrencyDescription = (name) => {
@@ -157,18 +203,45 @@ function CurrencyCalculator() {
             '일반 책': '해골/기사/유협/유령 계승에 사용되는 재화입니다.',
             '열쇠': '장비 뽑기에 사용되는 재화입니다.',
             '황금 말굽쇠': '탈 것 강화에 사용되는 재화입니다.',
-            '신위 망치': '아티팩트 강화에 사용되는 재화입니다.',
             '장비 도면': '장비 승급에 사용되는 재화입니다.',
             '보석 상자': '보석을 대량으로 획득할 수 있는 상자입니다.',
             '유지석': '펫 육성 옵션 유지에 사용되는 재화입니다. (13만원/100개 + 12,000보석)',
             'S급 에픽 (픽업)': '픽업 시 획득할 수 있는 S급 에픽 장비입니다. (180회 보장)',
-            'S급 에픽 (0.2%)': '0.2% 확률의 S급 에픽 장비입니다.',
-            'S급 에픽 (0.4%)': '0.4% 확률의 S급 에픽 장비입니다.',
-            '에픽 무기': '0.25% 확률의 에픽 무기입니다.',
-            '에픽 방어구': '0.5% 확률의 에픽 방어구입니다.',
-            '에픽 목걸이/반지': '1% 확률의 에픽 장신구입니다.',
+            '에픽 무기': '에픽 무기입니다. (10회당 0.5개 기댓값)',
+            '에픽 방어구': '에픽 방어구입니다. (10회당 0.3개 기댓값)',
+            '에픽 목걸이/반지': '에픽 장신구입니다. (10회당 0.6개 기댓값)',
+            '영걸의 계약': '영걸의 계약 가치를 나타냅니다. (약 80,706원)',
         };
         return descriptions[name] || '설명이 없는 재화입니다.';
+    };
+
+    // 가치를 보석/원화로 변환하는 함수
+    const formatValue = (gemValue, isRate = false) => {
+        if (showGems) {
+            // 원화 기준 rate를 보석으로 변환
+            const value = isRate ? gemValue / 10.833 : gemValue;
+            return `${value.toLocaleString('ko-KR', { maximumFractionDigits: 2 })} 보석`;
+        }
+        // 보석 기준 gemValue를 원화로 변환
+        const value = isRate ? gemValue : gemValue * 10.833;
+        return `${value.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}원`;
+    };
+
+    // 단가 표시를 위한 함수
+    const formatRate = (currency) => {
+        const value = CURRENCY_RATES[currency].gemValue || CURRENCY_RATES[currency].rate / 10.833;
+        if (showGems) {
+            return `${value.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}보석/개`;
+        }
+        return `${(value * 10.833).toLocaleString('ko-KR', { maximumFractionDigits: 2 })}원/개`;
+    };
+
+    const handleCurrencyToggle = () => {
+        if (showGems) {
+            setShowWarningModal(true);
+        } else {
+            setShowGems(true);
+        }
     };
 
     return (
@@ -180,27 +253,74 @@ function CurrencyCalculator() {
             <CurrencyGuide isOpen={isGuideOpen} setIsOpen={setIsGuideOpen} />
             <EquationGuide />
 
-            {/* 실제 우측 하단에 떠있는 초기화 버튼 */}
-            <div className="fixed bottom-4 right-4 z-50">
+            {/* 우측 하단 고정 버튼들 */}
+            <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-2">
+                {/* 토글 버튼 */}
+                <div className="flex flex-col items-end gap-1">
+                    <button
+                        onClick={handleCurrencyToggle}
+                        className="inline-flex items-center justify-center w-[100px] px-4 py-2 bg-indigo-500 hover:bg-indigo-600 rounded-lg transition-all duration-300"
+                    >
+                        <div className="flex items-center justify-center gap-2">
+                            {showGems ? (
+                                <>
+                                    <img 
+                                        src="/Jewel.webp" 
+                                        alt="보석" 
+                                        className="w-5 h-5 object-contain"
+                                    />
+                                    <span className="font-medium text-white">보석</span>
+                                </>
+                            ) : (
+                                <>
+                                    <div className="w-5 h-5 flex items-center justify-center bg-white rounded-full">
+                                        <span className="font-bold text-indigo-500">₩</span>
+                                    </div>
+                                    <span className="font-medium text-white">원화</span>
+                                </>
+                            )}
+                        </div>
+                    </button>
+                    <span className="text-xs text-gray-500">
+                        {showGems 
+                            ? "버튼 터치시 재화 가치가 원화로 변경" 
+                            : "버튼 터치시 재화 가치가 보석으로 변경"
+                        }
+                    </span>
+                </div>
+
+                {/* 초기화 버튼 */}
                 <button
                     onClick={handleReset}
-                    className="bg-indigo-500 hover:bg-indigo-600 text-white text-xs px-3 py-1.5 rounded shadow-sm"
+                    className="w-[100px] bg-indigo-500 hover:bg-indigo-600 text-white text-sm px-4 py-2 rounded-lg shadow-sm"
                 >
                     입력 초기화
                 </button>
             </div>
 
+            {/* 결과 표시 영역 - 스크롤에 영향받지 않도록 수정 */}
+            {activeInputs.length > 0 && (
+                <div className="fixed top-4 left-4 right-4 z-40 bg-blue-50 rounded-lg p-4 shadow-lg">
+                    <div className="text-lg font-semibold text-blue-900">
+                        총 가치: {formatValue(calculateTotal())}
+                    </div>
+                    <div className="text-sm text-blue-600 mt-1">
+                        입력된 항목 수: {activeInputs.length}개
+                    </div>
+                </div>
+            )}
+
             {activeInputs.length > 0 && (
                 <div className="p-4 bg-gray-50 rounded-lg">
                     <h3 className="text-md font-medium text-gray-700 mb-3">현재 입력 현황</h3>
                     <div className="space-y-2">
-                        {calculateIndividualValues().map(({ name, quantity, value }) => (
+                        {calculateIndividualValues().map(({ name, quantity, value, isRate }) => (
                             <div key={name} className="flex justify-between text-sm">
                                 <span className="text-gray-600">
                                     {name} × {quantity.toLocaleString()}개
                                 </span>
                                 <span className="font-medium text-gray-800">
-                                    {value.toLocaleString()}원
+                                    {formatValue(value, isRate)}
                                 </span>
                             </div>
                         ))}
@@ -222,11 +342,12 @@ function CurrencyCalculator() {
                             </div>
                             <div className="flex-1">
                                 <label className="text-sm text-gray-600 block mb-1">
-                                    {CURRENCY_RATES[key].name} ({CURRENCY_RATES[key].rate.toLocaleString()}원/개)
+                                    {CURRENCY_RATES[key].name} ({formatRate(key)})
                                 </label>
                                 <input
                                     type="number"
                                     min="0"
+                                    step="1"
                                     value={quantities[key] || ''}
                                     onChange={(e) => handleQuantityChange(key, e.target.value)}
                                     className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -241,7 +362,7 @@ function CurrencyCalculator() {
             <div className="space-y-4">
                 <h3 className="text-md font-medium text-gray-700">S급 에픽 장비</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {categories.sEquipment.map(key => (
+                    {categories.sepic.map(key => (
                         <div key={key} className="flex items-center p-4 bg-white rounded-lg shadow-sm border border-gray-200">
                             <div className="w-12 h-12 flex-shrink-0 mr-4">
                                 <img 
@@ -252,11 +373,12 @@ function CurrencyCalculator() {
                             </div>
                             <div className="flex-1">
                                 <label className="text-sm text-gray-600 block mb-1">
-                                    {CURRENCY_RATES[key].name} ({CURRENCY_RATES[key].rate.toLocaleString()}원/개)
+                                    {CURRENCY_RATES[key].name} ({formatRate(key)})
                                 </label>
                                 <input
                                     type="number"
                                     min="0"
+                                    step="1"
                                     value={quantities[key] || ''}
                                     onChange={(e) => handleQuantityChange(key, e.target.value)}
                                     className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -282,7 +404,7 @@ function CurrencyCalculator() {
                     </span>
                 </h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {categories.epicEquipment.map(key => (
+                    {categories.epic.map(key => (
                         <div key={key} className="flex items-center p-4 bg-white rounded-lg shadow-sm border border-gray-200">
                             <div className="w-12 h-12 flex-shrink-0 mr-4">
                                 <img 
@@ -293,11 +415,12 @@ function CurrencyCalculator() {
                             </div>
                             <div className="flex-1">
                                 <label className="text-sm text-gray-600 block mb-1">
-                                    {CURRENCY_RATES[key].name} ({CURRENCY_RATES[key].rate.toLocaleString()}원/개)
+                                    {CURRENCY_RATES[key].name} ({formatRate(key)})
                                 </label>
                                 <input
                                     type="number"
                                     min="0"
+                                    step="1"
                                     value={quantities[key] || ''}
                                     onChange={(e) => handleQuantityChange(key, e.target.value)}
                                     className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -314,13 +437,13 @@ function CurrencyCalculator() {
                     <div className="p-4 bg-gray-50 rounded-lg">
                         <h3 className="text-md font-medium text-gray-700 mb-3">입력 항목 요약</h3>
                         <div className="space-y-2">
-                            {calculateIndividualValues().map(({ name, quantity, value }) => (
+                            {calculateIndividualValues().map(({ name, quantity, value, isRate }) => (
                                 <div key={name} className="flex justify-between text-sm">
                                     <span className="text-gray-600">
                                         {name} × {quantity.toLocaleString()}개
                                     </span>
                                     <span className="font-medium text-gray-800">
-                                        {value.toLocaleString()}원
+                                        {formatValue(value, isRate)}
                                     </span>
                                 </div>
                             ))}
@@ -330,7 +453,7 @@ function CurrencyCalculator() {
 
                 <div className="p-4 bg-blue-50 rounded-lg space-y-4">
                     <div className="text-lg font-semibold text-blue-900">
-                        총 가치: {calculateTotal().toLocaleString()}원
+                        총 가치: {formatValue(calculateTotal())}
                     </div>
                     
                     {activeInputs.length > 0 && (
@@ -348,7 +471,7 @@ function CurrencyCalculator() {
                                         <button
                                             key={name}
                                             onClick={() => setSelectedCurrency(name)}
-                                            className="flex items-center gap-2 bg-[#6366F1] p-3 rounded-lg"
+                                            className="flex items-center gap-2 bg-[#6366F1] hover:bg-[#4F46E5] p-3 rounded-lg transition-colors"
                                         >
                                             <img 
                                                 src={image} 
@@ -403,47 +526,110 @@ function CurrencyCalculator() {
                         className="bg-white rounded-2xl w-full max-w-lg animate-modal-up"
                         onClick={e => e.stopPropagation()}
                     >
-                        {/* 모달 헤더 */}
                         <div className="p-4">
-                            <h3 className="text-xl font-bold">에픽 장비 가치 기준</h3>
+                            <h3 className="text-xl font-bold">특정 아이템 저격 기준 가치</h3>
                         </div>
 
-                        {/* 모달 컨텐츠 */}
                         <div className="px-4 py-2 space-y-4">
-                            <div>
-                                <h4 className="text-lg font-medium mb-3">1. 특정 아이템 저격 시 가치</h4>
-                                <div className="bg-gray-50 p-4 rounded-xl">
-                                    <p className="text-gray-600 mb-3">원하는 특정 아이템을 얻기 위한 기대 가치</p>
-                                    <ul className="space-y-2">
-                                        <li>• 무기(0.25%): 80,680원/개</li>
-                                        <li>• 방어구(0.5%): 40,340원/개</li>
-                                        <li>• 목걸이(1%): 20,170원/개</li>
-                                        <li>• 반지(1%): 20,170원/개</li>
+                            <div className="bg-blue-50 p-4 rounded-xl">
+                                <p className="text-gray-700">
+                                    현재 표시된 가치는 <span className="font-medium">모든 에픽 장비를 강화 재료로 사용</span>할 때의 기준입니다.
+                                    <br /><br />
+                                    특정 아이템을 저격할 경우, 실제 필요한 보석은 아래 계산식에 따라 더 높아집니다.
+                                </p>
+                            </div>
+
+                            <div className="bg-gray-50 p-4 rounded-xl space-y-3">
+                                <h4 className="font-medium">계산 방식</h4>
+                                <div className="space-y-2 text-gray-600">
+                                    <p>1. 에픽 등급 내 장비 타입별 가중치</p>
+                                    <ul className="ml-4 text-sm">
+                                        <li>• 무기: 25% (10종)</li>
+                                        <li>• 갑옷: 15% (3종)</li>
+                                        <li>• 목걸이/반지: 각 30% (각 3종)</li>
+                                    </ul>
+                                    <p>2. 특정 아이템 저격 시 확률</p>
+                                    <ul className="ml-4 text-sm">
+                                        <li>• 무기: 0.25% (2.5% ÷ 10종)</li>
+                                        <li>• 갑옷: 0.5% (1.5% ÷ 3종)</li>
+                                        <li>• 목걸이/반지: 1% (3% ÷ 3종)</li>
+                                    </ul>
+                                    <p>3. 10회 보장 시스템 반영</p>
+                                    <ul className="ml-4 text-sm">
+                                        <li>• 10회당 해당 타입 1개 보장</li>
+                                        <li>• 원하는 특정 아이템을 얻을 확률은 종류 수로 나눔</li>
                                     </ul>
                                 </div>
                             </div>
 
-                            <div>
-                                <h4 className="text-lg font-medium mb-3">2. 강화 재료로서의 가치</h4>
-                                <div className="bg-gray-50 p-4 rounded-xl">
-                                    <p className="text-gray-600 mb-3">종류별 전체 획득 확률 기준 (10회 보장 기준: 32,270원)</p>
-                                    <ul className="space-y-2">
-                                        <li>• 무기: 2.5% (0.25% × 10종) = 12,910원/개</li>
-                                        <li>• 방어구: 1.5% (0.5% × 3종) = 21,510원/개</li>
-                                        <li>• 목걸이: 3% (1% × 3종) = 10,760원/개</li>
-                                        <li>• 반지: 3% (1% × 3종) = 10,760원/개</li>
-                                    </ul>
-                                </div>
+                            <div className="bg-gray-50 p-4 rounded-xl">
+                                <p className="text-gray-600 mb-3">따라서 특정 아이템 저격 시 실제 가치는,</p>
+                                <ul className="space-y-2">
+                                    <li>
+                                        • 무기: 5,960 × 10 = 59,600보석/개
+                                        <br />
+                                        <span className="text-sm text-gray-500 ml-4">
+                                            (10종 중 원하는 무기 1개를 얻기 위해 평균적으로 필요한 보석)
+                                        </span>
+                                    </li>
+                                    <li>
+                                        • 갑옷: 9,933 × 3 = 29,799보석/개
+                                        <br />
+                                        <span className="text-sm text-gray-500 ml-4">
+                                            (3종 중 원하는 갑옷 1개를 얻기 위해 평균적으로 필요한 보석)
+                                        </span>
+                                    </li>
+                                    <li>
+                                        • 목걸이/반지: 4,967 × 3 = 14,901보석/개
+                                        <br />
+                                        <span className="text-sm text-gray-500 ml-4">
+                                            (3종 중 원하는 장신구 1개를 얻기 위해 평균적으로 필요한 보석)
+                                        </span>
+                                    </li>
+                                </ul>
+                                <p className="text-sm text-gray-500 mt-3">
+                                    * 위 수치는 해당 타입 내에서 원하는 특정 아이템 1개를 얻기 위해 평균적으로 필요한 보석의 양입니다.
+                                </p>
                             </div>
                         </div>
 
-                        {/* 모달 푸터 */}
                         <div className="p-4">
                             <button 
                                 className="w-full py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-medium transition-colors"
                                 onClick={() => setShowEquipmentGuide(false)}
                             >
                                 닫기
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* 경고 모달 */}
+            {showWarningModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg max-w-md w-full p-6">
+                        <h3 className="text-lg font-semibold mb-3">⚠️ 원화 환산 주의</h3>
+                        <p className="text-gray-600 mb-4">
+                            원화 가치는 참고용으로만 사용해주세요. 실제 가치는 게임 내 상황과 시장 상황에 따라 크게 달라질 수 있습니다.
+                            <br /><br />
+                            정확한 가치 비교를 위해서는 보석 단위 사용을 권장드립니다.
+                        </p>
+                        <div className="flex justify-end gap-2">
+                            <button
+                                onClick={() => {
+                                    setShowGems(false);
+                                    setShowWarningModal(false);
+                                }}
+                                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                            >
+                                확인했습니다
+                            </button>
+                            <button
+                                onClick={() => setShowWarningModal(false)}
+                                className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+                            >
+                                취소
                             </button>
                         </div>
                     </div>

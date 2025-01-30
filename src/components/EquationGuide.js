@@ -26,49 +26,49 @@ function EquationGuide() {
                         
                         <div className="space-y-6">
                             <div className="p-4 bg-gray-50 rounded-lg">
-                                <h4 className="font-medium mb-2">1. S급 에픽 기본 가치</h4>
-                                <div className="text-sm space-y-2">
-                                    <p>기준: 180회 뽑기 보장</p>
-                                    <p className="font-mono bg-white p-2 rounded border">
-                                        기본 가치 = 180회 × (2,980 ÷ 10) × 10.833
-                                        <br />
-                                        = 180 × 298 × 10.833
-                                        <br />
-                                        = 580,930원
-                                    </p>
-                                </div>
-
-                                <div className="mt-4">
-                                    <p>A. 특정 아이템 저격 시 가치:</p>
-                                    <p className="font-mono bg-white p-2 rounded border">
-                                        0.2% 아이템 = 580,930 × (1 ÷ 0.2) = 726,160원
-                                        <br />
-                                        0.4% 아이템 = 580,930 × (1 ÷ 0.4) = 363,080원
-                                    </p>
-                                </div>
+                                <h4 className="font-medium mb-2">1. S급 에픽 장비 가치</h4>
+                                <p className="font-mono bg-white p-2 rounded border">
+                                    픽업권 = 180회 × 298보석 = 53,640보석
+                                    <br />
+                                    무기/방어구 = 1/(0.2% + 1/8÷60) × 298보석 = 73,040보석
+                                    <br />
+                                    장신구 = 1/(0.4% + 1/4÷60) × 298보석 = 36,475보석
+                                </p>
+                                <p className="text-sm text-gray-500 mt-2">
+                                    * 픽업권은 180회 보장 시스템의 가치입니다
+                                    <br />
+                                    * 일반 S급 계산식 설명:
+                                    <br />
+                                    1) 자연확률: 무기/방어구 0.2%, 장신구 0.4%
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp;- 무기/방어구: 0.2%/1.6% = 1/8
+                                    <br />
+                                    &nbsp;&nbsp;&nbsp;- 장신구: 0.4%/1.6% = 1/4
+                                    <br />
+                                    2) 60회당 기댓값 = 자연확률 + (보장확률÷60회)
+                                    <br />
+                                    3) 1개 획득 기댓값 = 1/(60회당 기댓값)
+                                    <br />
+                                    4) 보석 가치 = 기댓값 × 뽑기비용(298보석)
+                                </p>
                             </div>
 
-                            <div className="p-4 bg-gray-50 rounded-lg">
-                                <h4 className="font-medium mb-2">2. 에픽 장비 가치</h4>
-                                <p>A. 특정 아이템 저격 시 가치:</p>
+                            <div className="p-4 bg-gray-50 rounded-lg mt-4">
+                                <h4 className="font-medium mb-2">2. 일반 에픽 장비 가치</h4>
+                                <p>10회 뽑기(2,980보석) 기준 기댓값:</p>
                                 <p className="font-mono bg-white p-2 rounded border">
-                                    무기(0.25%) = 32,270 × (1 ÷ 0.25) = 80,680원
+                                    무기: 5% (일반 2.5% + 보장 2.5%) = 5,960보석
                                     <br />
-                                    방어구(0.5%) = 32,270 × (1 ÷ 0.5) = 40,340원
+                                    갑옷: 3% (일반 1.5% + 보장 1.5%) = 9,933보석
                                     <br />
-                                    목걸이(1%) = 32,270 × (1 ÷ 1) = 20,170원
+                                    목걸이: 6% (일반 3.0% + 보장 3.0%) = 4,967보석
                                     <br />
-                                    반지(1%) = 32,270 × (1 ÷ 1) = 20,170원
+                                    반지: 6% (일반 3.0% + 보장 3.0%) = 4,967보석
                                 </p>
-                                <p className="mt-4">B. 강화 재료로서의 가치 (종류별 전체 획득 확률 기준):</p>
-                                <p className="font-mono bg-white p-2 rounded border">
-                                    무기: 2.5% (0.25% × 10종) = 32,270 × (1 ÷ 2.5) = 12,910원
+                                <p className="text-sm text-gray-500 mt-2">
+                                    * 일반 뽑기와 10회 보장 시스템을 모두 고려한 계산값입니다
                                     <br />
-                                    방어구: 1.5% (0.5% × 3종) = 32,270 × (1 ÷ 1.5) = 21,510원
-                                    <br />
-                                    목걸이: 3% (1% × 3종) = 32,270 × (1 ÷ 3) = 10,760원
-                                    <br />
-                                    반지: 3% (1% × 3종) = 32,270 × (1 ÷ 3) = 10,760원
+                                    * 에픽 등급(10%) 내에서의 장비 타입별 가중치가 반영되었습니다
                                 </p>
                             </div>
 
