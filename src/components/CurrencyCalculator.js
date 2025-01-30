@@ -70,18 +70,18 @@ const CURRENCY_RATES = {
     },
     // S급 에픽 장비
     sEquipmentWeapon: {
-        name: 'S급 에픽 무기',
-        gemValue: 15937,  // (0.2% + 60회보장) 기준
+        name: 'S급 에픽 무기 (저격 기준)',
+        gemValue: 73040,  // (0.2% + 60회보장) 기준
         image: '/SEquipment_Weapon.webp'
     },
     sEquipmentArmor: {
-        name: 'S급 에픽 방어구',
-        gemValue: 15937,  // (0.2% + 60회보장) 기준
+        name: 'S급 에픽 방어구 (저격 기준)',
+        gemValue: 73040,  // (0.2% + 60회보장) 기준
         image: '/SEquipment_Armor.webp'
     },
     sEquipmentAccessory: {
-        name: 'S급 에픽 장신구',
-        gemValue: 14396,  // (0.4% + 60회보장) 기준
+        name: 'S급 에픽 장신구 (저격 기준)',
+        gemValue: 36475,  // (0.4% + 60회보장) 기준
         image: '/SEquipment_Accessory.webp'
     },
     // 특수 재화 (현금 전용) - 주석 처리
