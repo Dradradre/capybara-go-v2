@@ -117,6 +117,25 @@ function CurrencyCalculator() {
         setActiveInputs(active);
     }, [quantities]);
 
+    // 뒤로가기 처리를 위한 useEffect
+    useEffect(() => {
+        const handlePopState = (e) => {
+            if (showEquipmentGuide) {
+                e.preventDefault();
+                setShowEquipmentGuide(false);
+            }
+        };
+
+        if (showEquipmentGuide) {
+            window.history.pushState({ modal: 'equipment' }, '');
+            window.addEventListener('popstate', handlePopState);
+        }
+
+        return () => {
+            window.removeEventListener('popstate', handlePopState);
+        };
+    }, [showEquipmentGuide]);
+
     const handleQuantityChange = (currency, value) => {
         // 빈 문자열이면 0으로 처리
         if (value === '') {
@@ -494,71 +513,45 @@ function CurrencyCalculator() {
             {/* 에픽 장비 가치 설명 모달 */}
             {showEquipmentGuide && (
                 <div 
-                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 sm:p-6 md:p-8"
+                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
                     onClick={() => setShowEquipmentGuide(false)}
                 >
                     <div 
-                        className="relative bg-white rounded-2xl w-full max-w-3xl"
+                        className="relative bg-white rounded-2xl w-full max-w-lg mx-auto"
                         onClick={e => e.stopPropagation()}
                     >
-                        <div className="p-6">
-                            <h3 className="text-xl font-bold mb-4">특정 아이템 저격 기준 가치</h3>
+                        <div className="p-5">
+                            <h3 className="text-lg font-bold mb-4">특정 아이템 저격 시 실제 가치</h3>
                             
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {/* 왼쪽: 계산 방식 */}
-                                <div className="space-y-4">
-                                    <div className="bg-blue-50 p-4 rounded-xl">
-                                        <p className="text-sm text-gray-700">
-                                            현재 표시된 가치는 <span className="font-medium">모든 에픽 장비를 강화 재료로 사용</span>할 때의 기준입니다.
-                                        </p>
-                                    </div>
+                            <div className="space-y-4">
+                                <div className="bg-blue-50 p-3 rounded-lg text-sm">
+                                    <p>현재 표시된 가치는 <span className="font-medium">강화 재료</span> 기준입니다.</p>
+                                    <p className="mt-1">특정 아이템 저격 시에는 아래 배수만큼 더 많은 보석이 필요합니다.</p>
+                                </div>
 
-                                    <div className="bg-gray-50 p-4 rounded-xl">
-                                        <h4 className="font-medium mb-2">에픽 등급 내 장비 타입별 가중치</h4>
-                                        <ul className="text-sm text-gray-600 space-y-1">
-                                            <li>• 무기: 25% (10종)</li>
-                                            <li>• 갑옷: 15% (3종)</li>
-                                            <li>• 목걸이/반지: 각 30% (각 3종)</li>
-                                        </ul>
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <div className="bg-gray-50 p-3 rounded-lg">
+                                        <p className="font-medium text-sm">무기 (10종)</p>
+                                        <p className="text-lg font-semibold">× 10배</p>
+                                        <p className="text-xs text-gray-500">59,600보석/개</p>
                                     </div>
-
-                                    <div className="bg-gray-50 p-4 rounded-xl">
-                                        <h4 className="font-medium mb-2">특정 아이템 저격 시 확률</h4>
-                                        <ul className="text-sm text-gray-600 space-y-1">
-                                            <li>• 무기: 0.25% (2.5% ÷ 10종)</li>
-                                            <li>• 갑옷: 0.5% (1.5% ÷ 3종)</li>
-                                            <li>• 목걸이/반지: 1% (3% ÷ 3종)</li>
-                                        </ul>
+                                    
+                                    <div className="bg-gray-50 p-3 rounded-lg">
+                                        <p className="font-medium text-sm">갑옷 (3종)</p>
+                                        <p className="text-lg font-semibold">× 3배</p>
+                                        <p className="text-xs text-gray-500">29,799보석/개</p>
+                                    </div>
+                                    
+                                    <div className="bg-gray-50 p-3 rounded-lg">
+                                        <p className="font-medium text-sm">장신구 (3종)</p>
+                                        <p className="text-lg font-semibold">× 3배</p>
+                                        <p className="text-xs text-gray-500">14,901보석/개</p>
                                     </div>
                                 </div>
 
-                                {/* 오른쪽: 실제 가치 */}
-                                <div className="bg-gray-50 p-4 rounded-xl">
-                                    <h4 className="font-medium mb-4">특정 아이템 저격 시 실제 가치</h4>
-                                    <div className="space-y-4">
-                                        <div>
-                                            <p className="font-medium">무기</p>
-                                            <p className="text-lg">5,960 × 10 = 59,600보석/개</p>
-                                            <p className="text-sm text-gray-500">
-                                                (10종 중 원하는 무기 1개 기준)
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="font-medium">갑옷</p>
-                                            <p className="text-lg">9,933 × 3 = 29,799보석/개</p>
-                                            <p className="text-sm text-gray-500">
-                                                (3종 중 원하는 갑옷 1개 기준)
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <p className="font-medium">목걸이/반지</p>
-                                            <p className="text-lg">4,967 × 3 = 14,901보석/개</p>
-                                            <p className="text-sm text-gray-500">
-                                                (3종 중 원하는 장신구 1개 기준)
-                                            </p>
-                                        </div>
-                                    </div>
-                                </div>
+                                <p className="text-xs text-gray-500">
+                                    * 위 수치는 해당 타입 내에서 원하는 특정 아이템 1개를 얻기 위해 평균적으로 필요한 보석의 양입니다.
+                                </p>
                             </div>
 
                             <button 
