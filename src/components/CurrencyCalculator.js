@@ -494,20 +494,20 @@ function CurrencyCalculator() {
             {/* 에픽 장비 가치 설명 모달 */}
             {showEquipmentGuide && (
                 <div 
-                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+                    className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto"
                     onClick={() => setShowEquipmentGuide(false)}
                 >
                     <div 
-                        className="bg-white rounded-2xl w-full max-w-lg animate-modal-up"
+                        className="relative bg-white rounded-2xl w-full max-w-lg my-4 max-h-[90vh] overflow-y-auto"
                         onClick={e => e.stopPropagation()}
                     >
-                        <div className="p-4">
-                            <h3 className="text-xl font-bold">특정 아이템 저격 기준 가치</h3>
+                        <div className="sticky top-0 bg-white p-4 border-b z-10">
+                            <h3 className="text-lg sm:text-xl font-bold">특정 아이템 저격 기준 가치</h3>
                         </div>
 
-                        <div className="px-4 py-2 space-y-4">
+                        <div className="p-4 space-y-4">
                             <div className="bg-blue-50 p-4 rounded-xl">
-                                <p className="text-gray-700">
+                                <p className="text-sm sm:text-base text-gray-700">
                                     현재 표시된 가치는 <span className="font-medium">모든 에픽 장비를 강화 재료로 사용</span>할 때의 기준입니다.
                                     <br /><br />
                                     특정 아이템을 저격할 경우, 실제 필요한 보석은 아래 계산식에 따라 더 높아집니다.
@@ -562,13 +562,10 @@ function CurrencyCalculator() {
                                         </span>
                                     </li>
                                 </ul>
-                                <p className="text-sm text-gray-500 mt-3">
-                                    * 위 수치는 해당 타입 내에서 원하는 특정 아이템 1개를 얻기 위해 평균적으로 필요한 보석의 양입니다.
-                                </p>
                             </div>
                         </div>
 
-                        <div className="p-4">
+                        <div className="sticky bottom-0 bg-white p-4 border-t">
                             <button 
                                 className="w-full py-3 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl font-medium transition-colors"
                                 onClick={() => setShowEquipmentGuide(false)}
