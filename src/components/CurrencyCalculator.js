@@ -44,21 +44,24 @@ function CurrencyCalculator() {
     }, [showEquipmentGuide]);
 
     const handleQuantityChange = (currency, value) => {
-        // 빈 문자열이면 0으로 처리
+        // 입력값이 비어있으면 0으로 설정
         if (value === '') {
             setQuantities(prev => ({ ...prev, [currency]: 0 }));
             return;
         }
 
-        // 숫자만 허용 (음수 제외)
-        const numValue = Math.max(0, Number(value));
+        // 문자열을 숫자로 직접 변환
+        const numValue = parseInt(value, 10);
         
-        // NaN이거나 무한대인 경우 이전 값 유지
+        // 유효한 숫자가 아니면 무시
         if (isNaN(numValue) || !isFinite(numValue)) {
             return;
         }
 
-        setQuantities(prev => ({ ...prev, [currency]: numValue }));
+        // 음수 방지
+        const finalValue = Math.max(0, numValue);
+        
+        setQuantities(prev => ({ ...prev, [currency]: finalValue }));
     };
 
     const handleDiscountChange = (currency, value) => {

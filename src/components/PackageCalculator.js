@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { CURRENCY_RATES, CURRENCY_CATEGORIES } from '../data/currencyData';
 
 // 거돌 패키지의 보석당 원화 가치
-const GORDOL_EFFICIENCY = 0.65046; // 84,560 보석 / 130,000원
+const GORDOL_EFFICIENCY = 1.4883; // 193,480 보석 / 130,000원
 
 function PackageCalculator() {
     const [packagePrice, setPackagePrice] = useState('');
@@ -27,12 +27,15 @@ function PackageCalculator() {
             return;
         }
 
-        const numValue = Math.max(0, Number(value));
+        const numValue = parseInt(value, 10);
+        
         if (isNaN(numValue) || !isFinite(numValue)) {
             return;
         }
 
-        setQuantities(prev => ({ ...prev, [currency]: numValue }));
+        const finalValue = Math.max(0, numValue);
+        
+        setQuantities(prev => ({ ...prev, [currency]: finalValue }));
     };
 
     const handleDiscountChange = (currency, value) => {
@@ -141,7 +144,7 @@ function PackageCalculator() {
     return (
         <div className="relative min-h-screen pb-20">
             <h1 className="text-lg font-semibold p-4 bg-indigo-500 text-white rounded-lg">
-                패키지 효율 계산기
+                패키지 효율 계산기 (베타)
             </h1>
 
             <div className="space-y-4">
@@ -150,7 +153,7 @@ function PackageCalculator() {
                     <p className="text-sm text-gray-600">
                         130,000원 = 보석 상자 40개 + 열쇠 120개 + 펫 알 1200개 + 보석 12,000개
                         <br />
-                        (총 84,560 보석 가치)
+                        (총 139,480 보석 가치)
                     </p>
                 </div>
 
@@ -159,7 +162,7 @@ function PackageCalculator() {
                     <ul className="text-sm text-yellow-700 space-y-1.5">
                         <li>• 보석으로 교환 가능한 재화들만을 기준으로 계산됩니다.</li>
                         <li>• 기본적으로 가치 산정은 암시장 교환비를 기준으로 하며, 실제 수급 난도는 고려되지 않았습니다.</li>
-                        <li>• 보석 상자의 경우, 소장품이나 펫 조각상 등의 부가 가치는 계산에서 제외되었습니다.</li>
+                        <li>• 보석 상자의 경우, 각 상자의 가치에 따른 포인트 체계를 추론하여 보석 상자의 가치를 3,600 보석으로 환산하였습니다.</li>
                     </ul>
                     <p className="text-xs text-yellow-600 mt-2">
                         따라서 실제 패키지의 가치는 계산된 수치와 다를 수 있습니다.

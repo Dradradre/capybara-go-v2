@@ -38,8 +38,37 @@ export const CURRENCY_RATES = {
     },
     gemBox: {
         name: '보석 상자',
-        gemValue: 920,  // 230보석 * 4회
+        gemValue: 3600,  // 펫 상자의 2배 (포인트 100 가정)
         image: '/BosuckBox.webp'
+    },
+    bronzeBox: {
+        name: '브론즈 보물상자',
+        gemValue: 40,  // 120보석/3개
+        image: '/BronzeBox.webp',
+        hasDiscount: true
+    },
+    silverBox: {
+        name: '실버 보물상자',
+        gemValue: 400,  // 400보석/개
+        image: '/SilverBox.webp',
+        hasDiscount: true
+    },
+    goldBox: {
+        name: '골드 보물상자',
+        gemValue: 800,  // 800보석/개
+        image: '/GoldBox.webp',
+        hasDiscount: true
+    },
+    petBox: {
+        name: '펫 보물상자',
+        gemValue: 1800,  // 1800보석/개
+        image: '/PetBox.webp',
+        hasDiscount: true
+    },
+    wishScroll: {
+        name: '소원의 두루마리',
+        gemValue: 298,  // 298보석/개
+        image: '/WishScroll.webp'
     },
     sEquipmentPickup: {
         name: 'S급 에픽 픽업권',
@@ -86,8 +115,9 @@ export const CURRENCY_RATES = {
 export const CURRENCY_CATEGORIES = {
     basic: [
         'gem', 'petEgg', 'dragonBook', 'normalBook', 'key', 
-        'goldenHorseshoe', 'blueprint', 'gemBox',
-        'younggeolContract'
+        'goldenHorseshoe', 'blueprint', 
+        'bronzeBox', 'silverBox', 'goldBox', 'petBox', 'gemBox',
+        'wishScroll', 'younggeolContract'
     ],
     epic: [
         'epicWeapon', 'epicArmor', 'epicAccessory'
@@ -109,6 +139,11 @@ export const CURRENCY_DESCRIPTIONS = {
     '황금 말굽쇠': '탈 것 강화에 사용되는 재화입니다.',
     '장비 도면': '장비 승급에 사용되는 재화입니다.',
     '보석 상자': '보석을 대량으로 획득할 수 있는 상자입니다.',
+    '브론즈 보물상자': '암시장에서 교환 가능한 보물상자입니다. (120보석/3개)',
+    '실버 보물상자': '암시장에서 교환 가능한 보물상자입니다. (400보석/개)',
+    '골드 보물상자': '암시장에서 교환 가능한 보물상자입니다. (800보석/개)',
+    '펫 보물상자': '암시장에서 교환 가능한 보물상자입니다. (1800보석/개)',
+    '소원의 두루마리': '기원 뽑기에 사용되는 재화입니다. (298보석/개)',
     '유지석': '펫 육성 옵션 유지에 사용되는 재화입니다. (13만원/100개 + 12,000보석)',
     'S급 에픽 (픽업)': '픽업 시 획득할 수 있는 S급 에픽 장비입니다. (180회 보장)',
     '에픽 무기': '에픽 무기입니다. (10회당 0.5개 기댓값)',

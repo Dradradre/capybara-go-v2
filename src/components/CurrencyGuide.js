@@ -87,28 +87,71 @@ function CurrencyGuide({ isOpen, setIsOpen }) {
                                 <span className="text-sm text-gray-500">계산식: 400보석 ÷ 5권 = 80보석/권</span>
                             </li>
                             <li>
+                                <strong>브론즈 보물상자</strong>
+                                <br />
+                                암시장 교환 비율: 3개 = 120보석
+                                <br />
+                                <span className="text-sm text-gray-500">계산식: 120보석 ÷ 3개 = 40보석/개</span>
+                            </li>
+                            <li>
+                                <strong>실버 보물상자</strong>
+                                <br />
+                                암시장 교환 비율: 1개 = 400보석
+                            </li>
+                            <li>
+                                <strong>골드 보물상자</strong>
+                                <br />
+                                암시장 교환 비율: 1개 = 800보석
+                            </li>
+                            <li>
+                                <strong>펫 보물상자</strong>
+                                <br />
+                                암시장 교환 비율: 1개 = 1800보석
+                            </li>
+                            <li>
                                 <strong>보석 상자</strong>
                                 <br />
-                                4회 뽑기 (50, 100, 200, 300, 500보석)
-                                <br />
                                 <span className="text-sm text-gray-500">
-                                    평균 가치: 920보석/상자
-                                    <br />
-                                    계산식: 230보석 × 4회 = 920보석
-                                    <br />
-                                    * 230보석 = (50+100+200+300+500) ÷ 5
-                                    <br />
-                                    * 펫 조각상 및 소장품 가치 미고려
+                                    계산식: 펫 상자(1800보석) × 2 = 3600보석
+                                    <br /><br />
+                                    <div className="p-3 bg-gray-50 rounded">
+                                        <strong>보석 가치 추론 근거</strong>
+                                        <br />
+                                        기존에는 보석 상자의 가치를 920 보석으로 계산하였습니다.
+                                        <br />
+                                        &nbsp;&nbsp;• 230보석 × 4회 = 920보석
+                                        <br />
+                                        &nbsp;&nbsp;&nbsp;&nbsp;• 230보석 = (50+100+200+300+500) ÷ 5
+                                        <br />
+                                        &nbsp;&nbsp;• <strong>펫 조각상 및 소장품 가치 미고려</strong>
+                                        <br /><br />
+                                        <strong>그러나 펫 보물상자의 가치를 1800 보석으로 산정하는데 보석 상자의 가치를 920 보석으로 환산하는 것은 모순입니다.</strong>
+                                        따라서 각 상자간의 포인트 체계를 추론하여 보석 상자의 가치를 3,600 보석으로 환산하였습니다.
+
+                                        <br />
+                                        <br />
+                                        1) 상자별 포인트와 로마 숫자의 연관성
+                                        <br />
+                                        &nbsp;&nbsp;• 브론즈 = 1포인트 (I)
+                                        <br />
+                                        &nbsp;&nbsp;• 실버 = 10포인트 (X)
+                                        <br />
+                                        &nbsp;&nbsp;• 골드 = 20포인트 (XX)
+                                        <br />
+                                        &nbsp;&nbsp;• 펫 = 50포인트 (L)
+                                        <br />
+                                        &nbsp;&nbsp;• 보석 = 100포인트 (C)
+                                        <br /><br />
+                                        2) 로마 숫자의 기본 단위 체계
+                                        <br />
+                                        &nbsp;&nbsp;• I(1) → V(5) → X(10) → L(50) → C(100) → D(500) → M(1000)
+                                    </div>
                                 </span>
                             </li>
                             <li>
-                                <strong>영걸의 계약</strong>
+                                <strong>소원의 두루마리</strong>
                                 <br />
-                                기원 뽑기 확률: 4%
-                                <br />
-                                <span className="text-sm text-gray-500">
-                                    계산식: 298보석 ÷ 0.04 = 7,450보석/개
-                                </span>
+                                기원 뽑기 1회 = 298보석
                             </li>
                         </ul>
 
