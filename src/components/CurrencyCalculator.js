@@ -194,7 +194,12 @@ function CurrencyCalculator() {
     };
 
     const handleReset = () => {
+        // 수량 초기화
         setQuantities(
+            Object.keys(CURRENCY_RATES).reduce((acc, key) => ({ ...acc, [key]: 0 }), {})
+        );
+        // 할인율도 초기화
+        setDiscounts(
             Object.keys(CURRENCY_RATES).reduce((acc, key) => ({ ...acc, [key]: 0 }), {})
         );
     };
@@ -342,31 +347,38 @@ function CurrencyCalculator() {
             <CurrencyGuide isOpen={isGuideOpen} setIsOpen={setIsGuideOpen} />
             <EquationGuide />
 
-            {/* 고정된 버튼 그룹 */}
-            <div className="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-40">
+            {/* 모바일에서는 우측 하단 FAB, 데스크톱에서는 우측에 고정 */}
+            <div className="fixed sm:right-4 sm:top-1/2 sm:-translate-y-1/2 
+                          right-4 bottom-4 
+                          flex flex-col gap-2 z-40">
                 <button
                     onClick={() => {
-                        if (showGems) {  // 원화로 바꿀 때만 경고 모달 표시
+                        if (showGems) {
                             setShowWarningModal(true);
                         } else {
-                            setShowGems(true);  // 보석으로 바로 전환
+                            setShowGems(true);
                         }
                     }}
-                    className="w-32 h-12 flex items-center justify-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-colors"
+                    className="w-12 sm:w-32 h-12 flex items-center justify-center gap-2 
+                             bg-indigo-500 hover:bg-indigo-600 text-white rounded-full sm:rounded-xl 
+                             shadow-lg transition-colors"
                 >
                     <img 
                         src={showGems ? "/Won.webp" : "/Jewel.webp"} 
                         alt={showGems ? "원화" : "보석"} 
                         className="w-6 h-6" 
                     />
-                    <span>{showGems ? "단위 변경" : "단위 변경"}</span>
+                    <span className="hidden sm:inline">단위 변경</span>
                 </button>
                 
                 <button
                     onClick={() => handleReset()}
-                    className="w-32 h-12 flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-colors"
+                    className="w-12 sm:w-32 h-12 flex items-center justify-center 
+                             bg-indigo-500 hover:bg-indigo-600 text-white rounded-full sm:rounded-xl 
+                             shadow-lg transition-colors"
                 >
-                    입력 초기화
+                    <span className="block sm:hidden">↺</span>
+                    <span className="hidden sm:inline">입력 초기화</span>
                 </button>
             </div>
 
