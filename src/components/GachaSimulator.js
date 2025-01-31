@@ -50,11 +50,6 @@ const GachaSimulator = () => {
 
     return (
         <div>
-            <div className="header">
-                <h1>카피바라 Go 뽑기 시뮬레이터</h1>
-                <p>제작: 351서버 페이커</p>
-            </div>
-            
             <div className="description-box">
                 <h3>시뮬레이터 설명</h3>
                 <ul>
