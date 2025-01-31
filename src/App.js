@@ -4,7 +4,8 @@ import GachaSimulator from './components/GachaSimulator';
 // import ProbabilityCalculator from './components/ProbabilityCalculator';
 import ProbCaculatorTest from './components/ProbCaculatorTest';
 import CurrencyCalculator from './components/CurrencyCalculator';
-import { CalculatorIcon, CurrencyIcon } from './icons'; // CurrencyIcon 추가 필요
+import PackageCalculator from './components/PackageCalculator';
+import { CalculatorIcon, CurrencyIcon, PackageIcon } from './icons'; // PackageIcon 추가 필요
 import { NavLink } from 'react-router-dom';
 import './App.css';
 import Home from './components/Home';
@@ -33,6 +34,10 @@ function App() {
                                 <span className="hidden sm:inline">재화 계산기</span>
                                 <span className="sm:hidden">재화</span>
                             </CustomNavLink>
+                            <CustomNavLink to="/package" icon={<PackageIcon />}>
+                                <span className="hidden sm:inline">패키지 계산기</span>
+                                <span className="sm:hidden">패키지</span>
+                            </CustomNavLink>
                         </div>
                     </div>
                 </nav>
@@ -57,6 +62,7 @@ function App() {
                             <Route path="/simulator" element={<GachaSimulator />} />
                             <Route path="/calculator" element={<ProbCaculatorTest />} />
                             <Route path="/currency" element={<CurrencyCalculator />} />
+                            <Route path="/package" element={<PackageCalculator />} />
                         </Routes>
                     </div>
                 </main>

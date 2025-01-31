@@ -25,6 +25,11 @@ const Home = () => {
                     <p className="text-gray-600">게임 재화를 효율적으로 관리하세요</p>
                 </Link>
 
+                <Link to="/package" className="card p-6 hover:shadow-lg transition-shadow">
+                    <h2 className="text-xl font-bold text-blue-600 mb-2">📦 패키지 효율 계산기</h2>
+                    <p className="text-gray-600">패키지 상품들의 효율을 '거침없이 돌격' 패키지와 비교하거나, 패키지 간 비교를 할 수 있습니다.</p>
+                </Link>
+
                 <div className="card p-6">
                     <h2 className="text-xl font-bold text-gray-400 mb-2">🔜 추가 기능</h2>
                     <p className="text-gray-400">더 많은 기능이 곧 추가될 예정입니다</p>
