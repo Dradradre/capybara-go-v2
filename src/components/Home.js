@@ -33,7 +33,7 @@ const Home = () => {
 
             <div className="text-center text-sm text-gray-500">
                 <p>제작: 351서버 페이커</p>
-                <p></p>
+                <p>{/*여기에 뭐 추가하징*/}</p>
             </div>
         </div>
     );

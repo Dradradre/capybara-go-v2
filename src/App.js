@@ -39,7 +39,7 @@ function App() {
 
                 {/* 메인 컨텐츠 */}
                 <main className="max-w-lg mx-auto p-2 sm:p-4">
-                    <div className="card mb-4 p-3 sm:p-4">
+                    {/* <div className="card mb-4 p-3 sm:p-4">
                         <div className="flex items-center gap-2 mb-2">
                             <span className="text-blue-500">ℹ️</span>
                             <h2 className="font-medium text-sm sm:text-base">도움말</h2>
@@ -48,7 +48,7 @@ function App() {
                             <li>• 가챠 시뮬레이터: 실제 뽑기와 동일한 환경에서 시뮬레이션</li>
                             <li>• 기댓값 계산기: 특정 조건 뽑기의 10,000번 시뮬레이션을 통한 기댓값 확인</li>
                         </ul>
-                    </div>
+                    </div> */}
 
                     <div className="card p-2 sm:p-4">
                         <Routes>
