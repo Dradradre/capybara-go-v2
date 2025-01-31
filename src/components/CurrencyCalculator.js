@@ -31,12 +31,14 @@ const CURRENCY_RATES = {
     goldenHorseshoe: { 
         name: '황금 말굽쇠', 
         gemValue: 20,  // 1000보석/50개
-        image: '/HorseShoe.webp'
+        image: '/HorseShoe.webp',
+        hasDiscount: true  // 할인 적용 가능 표시
     },
     blueprint: { 
         name: '장비 도면', 
-        rate: 3249,
-        image: '/equipment drawings.webp'
+        gemValue: 300,  // 300보석/개
+        image: '/equipment drawings.webp',
+        hasDiscount: true
     },
     gemBox: {
         name: '보석 상자',
@@ -103,6 +105,9 @@ function CurrencyCalculator() {
     const [quantities, setQuantities] = useState(
         Object.keys(CURRENCY_RATES).reduce((acc, key) => ({ ...acc, [key]: 0 }), {})
     );
+    const [discounts, setDiscounts] = useState(
+        Object.keys(CURRENCY_RATES).reduce((acc, key) => ({ ...acc, [key]: 0 }), {})
+    );
     const [activeInputs, setActiveInputs] = useState([]);
     const [selectedCurrency, setSelectedCurrency] = useState(null);
     const [isGuideOpen, setIsGuideOpen] = useState(false);
@@ -154,19 +159,47 @@ function CurrencyCalculator() {
         setQuantities(prev => ({ ...prev, [currency]: numValue }));
     };
 
+    const handleDiscountChange = (currency, value) => {
+        // 빈 문자열이면 0으로 처리
+        if (value === '') {
+            setDiscounts(prev => ({ ...prev, [currency]: 0 }));
+            return;
+        }
+
+        // 0~100 사이의 값만 허용
+        const numValue = Math.min(100, Math.max(0, Number(value)));
+        
+        if (isNaN(numValue) || !isFinite(numValue)) {
+            return;
+        }
+
+        setDiscounts(prev => ({ ...prev, [currency]: numValue }));
+    };
+
+    const calculateValue = (currency, quantity) => {
+        const item = CURRENCY_RATES[currency];
+        if (!item) return 0;
+        
+        const baseValue = item.rate ? item.rate / 10.833 : (item.gemValue || 0);
+        const discount = item.hasDiscount ? discounts[currency] / 100 : 0;
+        
+        // 할인율 적용된 가치 계산
+        return baseValue * (1 - discount) * quantity;
+    };
+
     const calculateTotal = () => {
         return Object.entries(quantities).reduce((total, [currency, quantity]) => {
-            const item = CURRENCY_RATES[currency];
-            if (!item) return total; // 존재하지 않는 아이템은 건너뛰기
-            
-            // rate가 있으면 원화 기준, gemValue가 있으면 보석 기준
-            const value = item.rate ? item.rate / 10.833 : (item.gemValue || 0);
-            return total + (value * quantity);
+            return total + calculateValue(currency, quantity);
         }, 0);
     };
 
     const handleReset = () => {
+        // 수량 초기화
         setQuantities(
+            Object.keys(CURRENCY_RATES).reduce((acc, key) => ({ ...acc, [key]: 0 }), {})
+        );
+        // 할인율도 초기화
+        setDiscounts(
             Object.keys(CURRENCY_RATES).reduce((acc, key) => ({ ...acc, [key]: 0 }), {})
         );
     };
@@ -246,13 +279,63 @@ function CurrencyCalculator() {
         return `${value.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}원`;
     };
 
-    // 단가 표시를 위한 함수
+    // 단가 표시를 위한 함수 수정
     const formatRate = (currency) => {
-        const value = CURRENCY_RATES[currency].gemValue || CURRENCY_RATES[currency].rate / 10.833;
+        const item = CURRENCY_RATES[currency];
+        const baseValue = item.gemValue || item.rate / 10.833;
+        // 할인율 적용
+        const discount = item.hasDiscount ? discounts[currency] / 100 : 0;
+        const discountedValue = baseValue * (1 - discount);
+        
         if (showGems) {
-            return `${value.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}보석/개`;
+            return `${discountedValue.toLocaleString('ko-KR', { maximumFractionDigits: 2 })}보석/개`;
         }
-        return `${(value * 10.833).toLocaleString('ko-KR', { maximumFractionDigits: 2 })}원/개`;
+        return `${(discountedValue * 10.833).toLocaleString('ko-KR', { maximumFractionDigits: 2 })}원/개`;
+    };
+
+    const renderCurrencyInput = (currency) => {
+        const item = CURRENCY_RATES[currency];
+        return (
+            <div key={currency} className="flex items-center p-4 bg-white rounded-lg shadow-sm border border-gray-200">
+                <div className="w-12 h-12 flex-shrink-0 mr-4">
+                    <img 
+                        src={item.image} 
+                        alt={item.name}
+                        className="w-full h-full object-contain"
+                    />
+                </div>
+                <div className="flex-1 space-y-2">
+                    <label className="text-sm text-gray-600 block">
+                        {item.name} ({formatRate(currency)})
+                    </label>
+                    <div className="flex gap-2">
+                        <input
+                            type="number"
+                            min="0"
+                            step="1"
+                            value={quantities[currency] || ''}
+                            onChange={(e) => handleQuantityChange(currency, e.target.value)}
+                            className="flex-1 border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="수량"
+                        />
+                        {item.hasDiscount && (
+                            <div className="flex items-center gap-1">
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    value={discounts[currency] || ''}
+                                    onChange={(e) => handleDiscountChange(currency, e.target.value)}
+                                    className="w-20 border rounded px-2 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    placeholder="할인율"
+                                />
+                                <span className="text-sm text-gray-500">%</span>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
     };
 
     return (
@@ -264,31 +347,38 @@ function CurrencyCalculator() {
             <CurrencyGuide isOpen={isGuideOpen} setIsOpen={setIsGuideOpen} />
             <EquationGuide />
 
-            {/* 고정된 버튼 그룹 */}
-            <div className="fixed right-4 top-1/2 -translate-y-1/2 flex flex-col gap-2 z-40">
+            {/* 모바일에서는 우측 하단 FAB, 데스크톱에서는 우측에 고정 */}
+            <div className="fixed sm:right-4 sm:top-1/2 sm:-translate-y-1/2 
+                          right-4 bottom-4 
+                          flex flex-col gap-2 z-40">
                 <button
                     onClick={() => {
-                        if (showGems) {  // 원화로 바꿀 때만 경고 모달 표시
+                        if (showGems) {
                             setShowWarningModal(true);
                         } else {
-                            setShowGems(true);  // 보석으로 바로 전환
+                            setShowGems(true);
                         }
                     }}
-                    className="w-32 h-12 flex items-center justify-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-colors"
+                    className="w-12 sm:w-32 h-12 flex items-center justify-center gap-2 
+                             bg-indigo-500 hover:bg-indigo-600 text-white rounded-full sm:rounded-xl 
+                             shadow-lg transition-colors"
                 >
                     <img 
                         src={showGems ? "/Won.webp" : "/Jewel.webp"} 
                         alt={showGems ? "원화" : "보석"} 
                         className="w-6 h-6" 
                     />
-                    <span>{showGems ? "단위 변경" : "단위 변경"}</span>
+                    <span className="hidden sm:inline">단위 변경</span>
                 </button>
                 
                 <button
                     onClick={() => handleReset()}
-                    className="w-32 h-12 flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl transition-colors"
+                    className="w-12 sm:w-32 h-12 flex items-center justify-center 
+                             bg-indigo-500 hover:bg-indigo-600 text-white rounded-full sm:rounded-xl 
+                             shadow-lg transition-colors"
                 >
-                    입력 초기화
+                    <span className="block sm:hidden">↺</span>
+                    <span className="hidden sm:inline">입력 초기화</span>
                 </button>
             </div>
 
@@ -325,31 +415,7 @@ function CurrencyCalculator() {
             <div className="space-y-4">
                 <h3 className="text-md font-medium text-gray-700">기본 재화</h3>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {categories.basic.map(key => (
-                        <div key={key} className="flex items-center p-4 bg-white rounded-lg shadow-sm border border-gray-200">
-                            <div className="w-12 h-12 flex-shrink-0 mr-4">
-                                <img 
-                                    src={CURRENCY_RATES[key].image} 
-                                    alt={CURRENCY_RATES[key].name}
-                                    className="w-full h-full object-contain"
-                                />
-                            </div>
-                            <div className="flex-1">
-                                <label className="text-sm text-gray-600 block mb-1">
-                                    {CURRENCY_RATES[key].name} ({formatRate(key)})
-                                </label>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    step="1"
-                                    value={quantities[key] || ''}
-                                    onChange={(e) => handleQuantityChange(key, e.target.value)}
-                                    className="w-full border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    placeholder="수량 입력"
-                                />
-                            </div>
-                        </div>
-                    ))}
+                    {categories.basic.map(key => renderCurrencyInput(key))}
                 </div>
             </div>
 
